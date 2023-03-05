@@ -65,9 +65,8 @@ call long_livers(50);
 with recursive length(id,father_id) AS (
 SELECT id,father_id from people where id =1
 union all
-SELECT count(*) from people join length l on l.id = people.father_id
+SELECT people.id,people.father_id from people join length l on l.id = people.father_id
 )
-SELECT * FROM length
--- запрос не работает, пока хз как исправить
+SELECT count(*) FROM length
 
 ```
