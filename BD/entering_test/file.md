@@ -70,6 +70,80 @@ SELECT people.id,people.father_id from people join length l on l.id = people.fat
 SELECT count(*) FROM length
 
 ```
+
+# Вариант 2
+## Задание 1
+```sql
+create table staff(
+id integer primary key,
+last_name varchar(64) not null,
+first_name varchar(64) not null,
+second_name varchar(64),
+sex char check(sex='f' or sex='m'),
+birthday date not null,
+post varchar(128) not null,
+department varchar(128) not null,
+head_id integer references staff(id),
+CONSTRAINT post_department_unique UNIQUE (post, department)
+);
+```
+## Задание 2
+```sql
+CREATE SEQUENCE staff_id_seq INCREMENT BY -1 CACHE 100 NO MINVALUE;
+INSERT INTO staff VALUES
+(nextval('staff_id_seq'), 'Сталин','Иосиф','Виссарионович','м', to_date('21.12.1879','DD.MM.YYYY'),'Председатель','ГКО', null),
+(nextval('staff_id_seq'), 'Молотов','Вячеслав','Михайлович','м', to_date('09.03.1890', 'DD.MM.YYYY'), 'Заместитель председателя', 'ГКО', 1),
+(nextval('staff_id_seq'), 'Маленков','Георгий','Максимилианович','м', to_date('08.01.1902', 'DD.MM.YYYY'), 'Начальник', 'УК ЦК ВКП(б)', 2),
+(nextval('staff_id_seq'), 'Ворошилов','Климент','Ефремович','м', to_date('04.02.1881', 'DD.MM.YYYY'), 'Председатель КО', 'СНК', 2),
+(nextval('staff_id_seq'), 'Микоян','Анастас','Иванович','м', to_date('25.11.1895', 'DD.MM.YYYY'), 'Председатель', 'КП-ВС РККА', 2) returning *;
+
+```
+## Задание 3
+```sql
+select t1.last_name, t1.first_name, t1.second_name, t1.post, t2.last_name as hLast_name, t2.first_name as hFirstName, t2.second_name as hSecond_name
+from staff t1 left join staff t2 on (t1.head_id=t2.id);
+```
+## Задание 4
+```sql
+update STAFF set STAFF.id = STAFF.id-2 where STAFF.head_id IS NULL returning *;
+```
+## Задание 5
+```sql
+CREATE OR REPLACE PROCEDURE birthday_boys(month integer) as $$
+DECLARE
+attr_e record;
+a integer;
+BEGIN
+a:=0;
+FOR attr_e in (SELECT * FROM people where extract(month from birthday) = month)
+LOOP
+raise info '% % % ',attr_e.last_name,attr_e.first_name,attr_e.second_name;
+a := a+1;
+END LOOP;
+raise info '%',a;
+raise info '%', (SELECT max(extract(year from age(NOW(),birthday))) from staff where extract(month from birthday) = month);
+raise info '%', (SELECT min(extract(year from age(NOW(),birthday))) from staff  where extract(month from birthday) = month);
+raise info '%', (SELECT round(avg(extract(year from age(NOW(),birthday))),2) from staff  where extract(month from birthday) = month);
+END
+$$
+LANGUAGE plpgsql;
+call birthday_boys(3);
+```
+## Задание 6
+```sql
+WITH RECURSIVE subordinates AS (
+SELECT id, head_id, 1 AS chain_length
+FROM staff
+WHERE head_id IS NOT NULL
+UNION ALL
+SELECT s.id, s.head_id, chain_length + 1
+FROM staff s
+JOIN subordinates sub ON s.head_id = sub.id
+)
+SELECT MAX(chain_length)
+FROM subordinates;
+```
+
 # Вариант 3
 ## Задание 1
 ```sql
