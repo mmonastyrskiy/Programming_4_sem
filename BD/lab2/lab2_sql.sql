@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS "C21-703-7"."Contract"
     signing_date date NOT NULL,
     client_id integer NOT NULL,
     PRIMARY KEY (contract_id),
-	CONSTRAINT signed_not_future CHECK(signing_date < now())
+	CONSTRAINT signed_not_future CHECK(signing_date <= now())
 );
 
 CREATE TABLE IF NOT EXISTS "C21-703-7".product
