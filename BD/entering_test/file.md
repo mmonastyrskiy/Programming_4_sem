@@ -127,7 +127,7 @@ raise info '%', (SELECT round(avg(extract(year from age(NOW(),birthday))),2) fro
 END
 $$
 LANGUAGE plpgsql;
-call birthday_boys(3);
+call birthday_boys(3)
 ```
 ## Задание 6
 ```sql
