@@ -5,6 +5,7 @@ TRUNCATE "C21-703-7"."Room" CASCADE;
 TRUNCATE "C21-703-7"."Shelf" CASCADE;
 TRUNCATE "C21-703-7"."product" CASCADE;
 
+SET Datestyle to German;
 
 INSERT INTO "C21-703-7"."Room" Values
 (1,'Room1',50,50,20,60,18,32),
@@ -83,17 +84,17 @@ info@mephi.ru'),
 БИК	044525700');
 
 
-INSERT INTO "C21-703-7"."Contract" Values(1,'26-03-23','25-03-24',100);
-INSERT INTO "C21-703-7"."Contract" Values(2,'26-03-23','25-03-24',100);
+INSERT INTO "C21-703-7"."Contract" Values(1,'25-03-24','26-03-23',100);
+INSERT INTO "C21-703-7"."Contract" Values(2,'25-03-24','26-03-23',100);
 
-INSERT INTO "C21-703-7"."Contract" Values(3,'30-03-23','29-03-24',101);
-INSERT INTO "C21-703-7"."Contract" Values(4,'30-03-23','29-03-24',102);
-INSERT INTO "C21-703-7"."Contract" Values(5,'30-03-23','29-03-24',103);
-INSERT INTO "C21-703-7"."Contract" Values(6,'30-03-23','29-03-24',104);
+INSERT INTO "C21-703-7"."Contract" Values(3,'29-03-24','30-03-23',101);
+INSERT INTO "C21-703-7"."Contract" Values(4,'29-03-24','30-03-23',102);
+INSERT INTO "C21-703-7"."Contract" Values(5,'29-03-24','30-03-23',103);
+INSERT INTO "C21-703-7"."Contract" Values(6,'29-03-24','30-03-23',104);
 
 INSERT INTO "C21-703-7"."product" Values(1,110,120,130,now(),1,60,30,20,50,5,2,10);
 INSERT INTO "C21-703-7"."product" Values(2,300,300,300,now(),2,60,30,20,50,1,3,100);
 INSERT INTO "C21-703-7"."product" Values(3,210,220,230,now(),3,80,50,40,70,2,1,37);
-INSERT INTO "C21-703-7"."product" Values(4,70,50,30,now(),4,60,30,20,50,5,2,10);
+INSERT INTO "C21-703-7"."product" Values(4,70,50,30,now(),4,60,30,20,50,5,3,10);
 INSERT INTO "C21-703-7"."product" Values(5,110,120,130,now(),5,60,30,20,50,5,6,70);
 
