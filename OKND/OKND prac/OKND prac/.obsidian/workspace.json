@@ -30,9 +30,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "f1f4a84758f6ac98",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Бухгалтерия/Мои счета.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -98,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "1.6/ПВК.md",
+                "file": "Бухгалтерия/Мои счета.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "1.6/ПВК.md",
+                "file": "Бухгалтерия/Мои счета.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "1.6/ПВК.md"
+                "file": "Бухгалтерия/Мои счета.md"
               }
             }
           }
@@ -159,10 +171,12 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "4676a32cbb0cd7f5",
+  "active": "f1f4a84758f6ac98",
   "lastOpenFiles": [
-    "main/общие данные.md",
     "1.6/ПВК.md",
+    "Бухгалтерия/Мои счета.md",
+    "Бухгалтерия",
+    "main/общие данные.md",
     "main/Общие документы.md",
     "1.6",
     "assets/4937-У.pdf",
@@ -172,7 +186,6 @@
     "assets/Положение Банка России от 15 декабря 2014 г N 445 П О требованиях к правилам вну.rtf",
     "Положение Банка России от 15 декабря 2014 г N 445 П О требованиях к правилам вну.rtf",
     "assets",
-    "assets/Nadzor_PODFT_KPK_Zadanie_6_p_2_3_4_SPO.pdf",
-    "main"
+    "assets/Nadzor_PODFT_KPK_Zadanie_6_p_2_3_4_SPO.pdf"
   ]
 }
