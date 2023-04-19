@@ -25,9 +25,9 @@ EXECUTE PROCEDURE place_restrictions_trigger_func();
 --1
 CREATE OR REPLACE FUNCTION product_finder(client_n varchar(255),cdate date) RETURNS integer as $$
 BEGIN
-return SELECT count(product_id) from "C21-703-7"."product" p LEFT JOIN "C21-703-7"."Contract" c on(p.contract_id = c.contract_id)
- JOIN "C21-703-7"."Client" cl on (cl.client_id = c.client_id)
- where (client_name = client_n and expiration_date > cdate)
+return SELECT count(product_id) from "C21-703-7"."product" p JOIN "C21-703-7"."Contract" c on(p.contract_id = c.contract_id)
+ LEFT JOIN "C21-703-7"."Client" cl on (cl.client_id = c.client_id)
+ where (client_name = client_n and expiration_date < cdate)
  END;
 $$ language plpgsql;
 
