@@ -5,8 +5,11 @@ BEGIN
 if (SELECT spaces_left-1 from "C21-703-7"."Shelf" where shelf_id =new.shelf_id) < 0 then
 RAISE EXCEPTION 'Привышена емкость полки %', new.shelf_id;
 else
+if (pg_trigger_depth()=1) then
 UPDATE "C21-703-7"."Shelf" set spaces_left = spaces_left-1 where shelf_id = new.shelf_id
-END IF
+end if;
+END IF;
+
 
 I
 
