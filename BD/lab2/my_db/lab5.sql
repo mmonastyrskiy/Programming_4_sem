@@ -2,19 +2,17 @@
 
 CREATE OR REPLACE FUNCTION place_restrictions_trigger_func() RETURNS trigger as $$
 BEGIN
-if (SELECT spaces_left-1 from "C21-703-7"."Shelf" where shelf_id =new.shelf_id) < 0 then
+if ((SELECT spaces_left-1 from "C21-703-7"."Shelf" where shelf_id =new.shelf_id) < 0) then
 RAISE EXCEPTION 'Привышена емкость полки %', new.shelf_id;
 else
 if (pg_trigger_depth()=1) then
 UPDATE "C21-703-7"."Shelf" set spaces_left = spaces_left-1 where shelf_id = new.shelf_id
 end if;
 END IF;
-
+if((sum(weight) FROM "C21-703-7"."Shelf" s LEFT JOIN "C21-703-7"."product" p) > max_weight) then
+RAISE EXCEPTION "Привышен максимальный вес %", new.shelf_id;
 
 I
-
-
-
 
 END;
 $$ language plpgsql;
@@ -35,6 +33,7 @@ return SELECT count(product_id) from "C21-703-7"."product" p JOIN "C21-703-7"."C
 $$ language plpgsql;
 
 --2
+
 
 --3
 
