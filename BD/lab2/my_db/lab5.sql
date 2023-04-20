@@ -10,7 +10,7 @@ UPDATE "C21-703-7"."Shelf" set spaces_left = spaces_left-1 where shelf_id = new.
 end if;
 END IF;
 if((sum(weight) FROM "C21-703-7"."Shelf" s LEFT JOIN "C21-703-7"."product" p) > max_weight) then
-RAISE EXCEPTION "Привышен максимальный вес %", new.shelf_id;
+RAISE EXCEPTION 'Привышен максимальный вес %', new.shelf_id;
 
 I
 
@@ -33,8 +33,84 @@ return SELECT count(product_id) from "C21-703-7"."product" p JOIN "C21-703-7"."C
 $$ language plpgsql;
 
 --2
+CREATE AGGREGATE fitsornot(varchar(255))(
+stype = тип данных,
+sfunc = имя функции шага,
+initcond = 0,
+другие параметры
+);
 
 
 --3
 
+
+CREATE VIEW client_product_view AS
+SELECT c.name AS client_name, p.product_id, p.width, p.height, p.length, p.unpacking_date, p.shelf_id, p.slot_id, p.weight
+FROM "C21-703-7"."Client" c
+INNER JOIN "C21-703-7"."Contract" ct ON c.client_id = ct.client_id
+INNER JOIN "C21-703-7"."Product" p ON ct.contract_id = p.contract_id;
+
 --4
+CREATE FUNCTION init()
+RETURNS VOID
+AS $$
+BEGIN
+    CREATE OR REPLACE TABLE queue (
+                id SERIAL PRIMARY KEY,
+                data VARCHAR(64) NOT NULL,
+                inserted_at TIMESTAMP NOT NULL DEFAULT NOW()
+            );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION enqueue(new_data VARCHAR(64))
+RETURNS VOID
+AS
+$$
+BEGIN
+    INSERT INTO queue (data) VALUES (new_data);
+END;
+$$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION dequeue()
+RETURNS VOID
+AS
+$$
+BEGIN
+    DELETE FROM queue WHERE id = (SELECT max(id) FROM queue);
+END;
+$$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION empty()
+RETURNS VOID
+AS
+$$
+BEGIN
+    DELETE FROM queue;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION top()
+RETURNS VARCHAR(64)
+AS
+$$
+BEGIN
+    RETURN (SELECT data FROM queue ORDER BY id LIMIT 1);
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION tail()
+RETURNS VARCHAR(64)
+AS
+$$
+BEGIN
+    RETURN (SELECT data FROM queue ORDER BY id ASC LIMIT 1);
+END;
+$$
+LANGUAGE plpgsql;
