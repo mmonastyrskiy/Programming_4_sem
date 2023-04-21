@@ -16,7 +16,7 @@ I
 
 END;
 $$ language plpgsql;
-CREATE TRIGGER place_restrictions_trigger BEFORE INSERT OR UPDATE ON "C21-703-7"."Shelf" s  LEFT JOIN "C21-703-7"."product" p 
+CREATE TRIGGER place_restrictions_trigger BEFORE INSERT OR UPDATE ON ("C21-703-7"."Shelf" s  LEFT JOIN "C21-703-7"."product" p )
 on(s.shelf_id = p.shelf_id)
 FOR EACH ROW
 EXECUTE PROCEDURE place_restrictions_trigger_func();
@@ -32,13 +32,46 @@ return SELECT count(product_id) from "C21-703-7"."product" p JOIN "C21-703-7"."C
  END;
 $$ language plpgsql;
 
+
+
+
 --2
-CREATE AGGREGATE fitsornot(varchar(255))(
-stype = тип данных,
-sfunc = имя функции шага,
-initcond = 0,
-другие параметры
+CREATE OR REPLACE FUNCTION max_parameters_step(numeric[], numeric[]) RETURNS numeric[] AS $$
+DECLARE
+res numeric[];
+BEGIN
+IF $1[1] > $2[1] THEN
+res[1] := $1[1];
+ELSE
+res[1] := $2[1];
+END IF;
+IF $1[2] > $2[2] THEN
+res[2] := $1[2];
+ELSE
+res[2] := $2[2];
+END IF;
+IF $1[3] > $2[3] THEN
+res[3] := $1[3];
+ELSE
+res[3] := $2[3];
+END IF;
+RETURN res;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION max_parameters_final(numeric[]) RETURNS text AS $$
+SELECT (to_char($1[1],'99999999D999') || 'x' || to_char($1[2],'99999999D999') ||
+'x' ||to_char($1[3],'9999999999D999'));
+$$ LANGUAGE sql;
+
+CREATE OR REPLACE AGGREGATE maxpam(numeric[]) (
+sfunc = max_parameters_step,
+stype = numeric[],
+initcond = '{0, 0, 0}',
+finalfunc = max_parameters_final
 );
+
+select maxpam(ARRAY[p.height,p.width,p.length]) FROM public."product" p
 
 
 --3
@@ -55,7 +88,8 @@ CREATE FUNCTION init()
 RETURNS VOID
 AS $$
 BEGIN
-    CREATE OR REPLACE TABLE queue (
+DROP TABLE queue;
+    CREATE TABLE queue (
                 id SERIAL PRIMARY KEY,
                 data VARCHAR(64) NOT NULL,
                 inserted_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -114,3 +148,21 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+
+--test
+
+
+select init();
+select init();
+select enqueue('Mathematics');
+select enqueue('Physics');
+select enqueue('English');
+select enqueue('Biology');
+select enqueue('Social studies');
+select * from queue;
+select dequeue();
+select top();
+select tail();
+select dequeue();select dequeue();select dequeue();select dequeue();select dequeue();select dequeue();
+
