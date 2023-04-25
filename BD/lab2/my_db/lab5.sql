@@ -6,18 +6,16 @@ if ((SELECT spaces_left-1 from "C21-703-7"."Shelf" where shelf_id =new.shelf_id)
 RAISE EXCEPTION 'Привышена емкость полки %', new.shelf_id;
 else
 if (pg_trigger_depth()=1) then
-UPDATE "C21-703-7"."Shelf" set spaces_left = spaces_left-1 where shelf_id = new.shelf_id
-end if;
+UPDATE "C21-703-7"."Shelf" set spaces_left = spaces_left-1 where shelf_id = new.shelf_id;
 END IF;
-if((sum(weight) FROM "C21-703-7"."Shelf" s LEFT JOIN "C21-703-7"."product" p) > max_weight) then
+END IF;
+if (SELECT (sum(weight) + new.weight) FROM "C21-703-7"."Shelf" s LEFT JOIN "C21-703-7"."product" on s.shelf_id = p.shelf_id) then
 RAISE EXCEPTION 'Привышен максимальный вес %', new.shelf_id;
-
-I
-
+END IF;
 END;
+
 $$ language plpgsql;
-CREATE TRIGGER place_restrictions_trigger BEFORE INSERT OR UPDATE ON ("C21-703-7"."Shelf" s  LEFT JOIN "C21-703-7"."product" p )
-on(s.shelf_id = p.shelf_id)
+CREATE TRIGGER place_restrictions_trigger BEFORE INSERT OR UPDATE ON "C21-703-7"."product"
 FOR EACH ROW
 EXECUTE PROCEDURE place_restrictions_trigger_func();
 
@@ -82,6 +80,22 @@ SELECT c.name AS client_name, p.product_id, p.width, p.height, p.length, p.unpac
 FROM "C21-703-7"."Client" c
 INNER JOIN "C21-703-7"."Contract" ct ON c.client_id = ct.client_id
 INNER JOIN "C21-703-7"."Product" p ON ct.contract_id = p.contract_id;
+
+
+
+CREATE OR REPLACE FUNCTION update_view() RETURNS TRIGGER AS $$
+BEGIN
+UPDATE "C21-703-7"."Client" SET requisites = NEW.requisites WHERE id= OLD.id;
+
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+drop trigger viewup on client_product_view
+CREATE OR REPLACE TRIGGER viewup
+INSTEAD OF UPDATE ON client_product_view FOR EACH ROW EXECUTE PROCEDURE update_view();
+
+UPDATE client_product_view SET requisites = 'OOO CHTOTO' WHERE id = 1
+
 
 --4
 CREATE FUNCTION init()
