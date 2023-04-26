@@ -20,6 +20,9 @@ FOR EACH ROW
 EXECUTE PROCEDURE place_restrictions_trigger_func();
 
 
+UPDATE "C21-703-7"."Shelf" SET max_weight = 10 where id = 1;
+
+
 
 --1
 CREATE OR REPLACE FUNCTION product_finder(client_n varchar(255),cdate date) RETURNS integer as $$
