@@ -130,7 +130,7 @@ RETURNS VOID
 AS
 $$
 BEGIN
-    DELETE FROM queue WHERE id = (SELECT max(id) FROM queue);
+    DELETE FROM queue WHERE id = (SELECT min(id) FROM queue);
 END;
 $$
 LANGUAGE plpgsql;
