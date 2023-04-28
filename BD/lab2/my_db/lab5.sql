@@ -20,16 +20,16 @@ FOR EACH ROW
 EXECUTE PROCEDURE place_restrictions_trigger_func();
 
 
-UPDATE "C21-703-7"."Shelf" SET max_weight = 10 where id = 1;
+UPDATE "C21-703-7"."Shelf" SET max_weight = 10 where shelf_id = 1;
 
 
 
 --1
 CREATE OR REPLACE FUNCTION product_finder(client_n varchar(255),cdate date) RETURNS integer as $$
 BEGIN
-return SELECT count(product_id) from "C21-703-7"."product" p JOIN "C21-703-7"."Contract" c on(p.contract_id = c.contract_id)
+return (SELECT count(product_id) from "C21-703-7"."product" p JOIN "C21-703-7"."Contract" c on(p.contract_id = c.contract_id)
  LEFT JOIN "C21-703-7"."Client" cl on (cl.client_id = c.client_id)
- where (client_name = client_n and expiration_date < cdate)
+ where (client_name = client_n and expiration_date < cdate));
  END;
 $$ language plpgsql;
 
@@ -72,7 +72,7 @@ initcond = '{0, 0, 0}',
 finalfunc = max_parameters_final
 );
 
-select maxpam(ARRAY[p.height,p.width,p.length]) FROM public."product" p
+select maxpam(ARRAY[p.height,p.width,p.length]) FROM "C21-703-7"."product" p
 
 
 --3
