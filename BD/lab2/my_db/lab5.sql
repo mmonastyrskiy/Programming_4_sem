@@ -29,11 +29,11 @@ CREATE OR REPLACE FUNCTION product_finder(client_n varchar(255),cdate date) RETU
 BEGIN
 return (SELECT count(product_id) from "C21-703-7"."product" p JOIN "C21-703-7"."Contract" c on(p.contract_id = c.contract_id)
  LEFT JOIN "C21-703-7"."Client" cl on (cl.client_id = c.client_id)
- where (client_name = client_n and expiration_date < cdate));
+ where (name = client_n and expiration_date < cdate));
  END;
 $$ language plpgsql;
 
-
+SELECT product_finder('PAO SBERBANK','29.01.2003');
 
 
 --2
@@ -76,13 +76,12 @@ select maxpam(ARRAY[p.height,p.width,p.length]) FROM "C21-703-7"."product" p
 
 
 --3
-
-
+drop view client_product_view;
 CREATE VIEW client_product_view AS
-SELECT c.name AS client_name, p.product_id, p.width, p.height, p.length, p.unpacking_date, p.shelf_id, p.slot_id, p.weight
+SELECT c.name AS client_name, c.client_id as client_id, c.requisites, p.product_id, p.width, p.height, p.length, p.unpacking_date, p.shelf_id, p.slot_id, p.weight
 FROM "C21-703-7"."Client" c
 INNER JOIN "C21-703-7"."Contract" ct ON c.client_id = ct.client_id
-INNER JOIN "C21-703-7"."Product" p ON ct.contract_id = p.contract_id;
+INNER JOIN "C21-703-7"."product" p ON ct.contract_id = p.contract_id;
 
 
 
@@ -93,11 +92,12 @@ UPDATE "C21-703-7"."Client" SET requisites = NEW.requisites WHERE id= OLD.id;
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-drop trigger viewup on client_product_view
-CREATE OR REPLACE TRIGGER viewup
+
+--drop trigger viewup on client_product_view;
+CREATE OR REPLACE TRIGGER clinet_product_view
 INSTEAD OF UPDATE ON client_product_view FOR EACH ROW EXECUTE PROCEDURE update_view();
 
-UPDATE client_product_view SET requisites = 'OOO CHTOTO' WHERE id = 1
+UPDATE client_product_view SET requisites = 'OOO CHTOTO' WHERE client_id = 1;
 
 
 --4
@@ -105,7 +105,7 @@ CREATE FUNCTION init()
 RETURNS VOID
 AS $$
 BEGIN
-DROP TABLE queue;
+DROP TABLE IF EXISTS queue;
     CREATE TABLE queue (
                 id SERIAL PRIMARY KEY,
                 data VARCHAR(64) NOT NULL,
