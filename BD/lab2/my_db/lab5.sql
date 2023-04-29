@@ -2,22 +2,59 @@
 
 CREATE OR REPLACE FUNCTION place_restrictions_trigger_func() RETURNS trigger as $$
 BEGIN
-if ((SELECT spaces_left-1 from "C21-703-7"."Shelf" where shelf_id =new.shelf_id) < 0) then
-RAISE EXCEPTION 'Привышена емкость полки %', new.shelf_id;
+if(TG_OP = 'DELETE') then
+if(((SELECT spaces_left+1 from "C21-703-7"."Shelf" where shelf_id = old.shelf_id) <= (SELECT max_spaces from "C21-703-7"."Shelf" where shelf_id = old.shelf_id))
+  then
+UPDATE "C21-703-7"."Shelf" SET spaces_left = spaces_left+1 where shelf_id = old.shelf_id;
+UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left+old.weight where shelf_id = old.shelf_id;
 else
-if (pg_trigger_depth()=1) then
-UPDATE "C21-703-7"."Shelf" set spaces_left = spaces_left-1 where shelf_id = new.shelf_id;
+RAISE EXCEPTION 'Нарушены правила использования мест на полке: %', old.shelf_id;
 END IF;
+elsif (TG_OP = 'INSERT') then
+if(((SELECT spaces_left-1 from "C21-703-7"."Shelf" where shelf_id = new.shelf_id) >= 0))
+ then
+
+UPDATE "C21-703-7"."Shelf" SET spaces_left = spaces_left-1 where shelf_id = new.shelf_id;
+UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left-new.weight where shelf_id = new.shelf_id;
+else
+RAISE EXCEPTION 'Нарушены правила использования мест на полке: %', new.shelf_id;
 END IF;
-if (SELECT (sum(weight) + new.weight) FROM "C21-703-7"."Shelf" s LEFT JOIN "C21-703-7"."product" on s.shelf_id = p.shelf_id) then
-RAISE EXCEPTION 'Привышен максимальный вес %', new.shelf_id;
 END IF;
 END;
 
+CREATE OR REPLACE FUNCTION weight_restrictions_trigger_func() RETURNS trigger as $$
+BEGIN
+if (TG_OP = 'DELETE') then
+if((SELECT weight_left + old.weight from "C21-703-7"."Shelf" where shelf_id = old.shelf_id) > (SELECT max_weight from "C21-703-7"."Shelf" where shelf_id = old.shelf_id)) then
+RAISE EXCEPTION 'Ошибка нагрузки на полке: %', old.shelf_id;
+END IF;
+
+elsif (TG_OP = 'INSERT') then
+if((SELECT weight_left - new.weight from "C21-703-7"."Shelf" where shelf_id = new.shelf_id) < 0) then
+RAISE EXCEPTION 'Ошибка нагрузки на полке: %', new.shelf_id;
+END IF;
+
+elsif (TG_OP = 'UPDATE') then
+if (old.weight - new.weight != 0) then
+if ((SELECT weight_left - new.weight + old.weight from "C21-703-7"."Shelf" where shelf_id = new.shelf_id)<0) 
+RAISE EXCEPTION 'Ошибка нагрузки на полке: %', new.shelf_id;
+else
+UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left - new.weight + old.weight where shelf_id = new.shelf_id;
+END IF;
+END IF;
+END IF;
+
+END;
+
 $$ language plpgsql;
-CREATE TRIGGER place_restrictions_trigger BEFORE INSERT OR UPDATE ON "C21-703-7"."product"
+CREATE TRIGGER place_restrictions_trigger BEFORE INSERT OR DELETE ON "C21-703-7"."product"
 FOR EACH ROW
 EXECUTE PROCEDURE place_restrictions_trigger_func();
+
+
+CREATE TRIGGER weight_restrictions_trigger BEFORE INSERT OR DELETE OR UPDATE ON "C21-703-7"."product"
+FOR EACH ROW
+EXECUTE PROCEDURE weight_restrictions_trigger_func();
 
 
 UPDATE "C21-703-7"."Shelf" SET max_weight = 10 where shelf_id = 1;
@@ -93,7 +130,6 @@ RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
---drop trigger viewup on client_product_view;
 CREATE OR REPLACE TRIGGER clinet_product_view
 INSTEAD OF UPDATE ON client_product_view FOR EACH ROW EXECUTE PROCEDURE update_view();
 
@@ -181,5 +217,11 @@ select * from queue;
 select dequeue();
 select top();
 select tail();
-select dequeue();select dequeue();select dequeue();select dequeue();select dequeue();select dequeue();
+select dequeue();
+select dequeue();
+select dequeue();
+select dequeue();
+select dequeue();
+select dequeue();
+
 
