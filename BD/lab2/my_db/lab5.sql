@@ -1,9 +1,8 @@
 --0
-
 CREATE OR REPLACE FUNCTION place_restrictions_trigger_func() RETURNS trigger as $$
 BEGIN
 if(TG_OP = 'DELETE') then
-if(((SELECT spaces_left+1 from "C21-703-7"."Shelf" where shelf_id = old.shelf_id) <= (SELECT max_spaces from "C21-703-7"."Shelf" where shelf_id = old.shelf_id))
+if(((SELECT spaces_left+1 from "C21-703-7"."Shelf" where shelf_id = old.shelf_id) <= (SELECT max_spaces from "C21-703-7"."Shelf" where shelf_id = old.shelf_id)))
   then
 UPDATE "C21-703-7"."Shelf" SET spaces_left = spaces_left+1 where shelf_id = old.shelf_id;
 UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left+old.weight where shelf_id = old.shelf_id;
@@ -24,6 +23,7 @@ elsif (TG_OP = 'UPDATE') then
 UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left - new.weight + old.weight where shelf_id = new.shelf_id;
 END IF;
 END;
+$$ language plpgsql;
 
 CREATE OR REPLACE FUNCTION weight_restrictions_trigger_func() RETURNS trigger as $$
 BEGIN
@@ -39,7 +39,7 @@ END IF;
 
 elsif (TG_OP = 'UPDATE') then
 if (old.weight - new.weight != 0) then
-if ((SELECT weight_left - new.weight + old.weight from "C21-703-7"."Shelf" where shelf_id = new.shelf_id)<0) 
+if ((SELECT weight_left - new.weight + old.weight from "C21-703-7"."Shelf" where shelf_id = new.shelf_id)<0) then
 RAISE EXCEPTION 'Ошибка нагрузки на полке: %', new.shelf_id;
 else
 UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left - new.weight + old.weight where shelf_id = new.shelf_id;
@@ -50,18 +50,14 @@ END IF;
 END;
 
 $$ language plpgsql;
-CREATE TRIGGER place_restrictions_trigger BEFORE INSERT OR DELETE ON "C21-703-7"."product"
+CREATE OR REPLACE TRIGGER place_restrictions_trigger BEFORE INSERT OR DELETE ON "C21-703-7"."product"
 FOR EACH ROW
 EXECUTE PROCEDURE place_restrictions_trigger_func();
 
 
-CREATE TRIGGER weight_restrictions_trigger BEFORE INSERT OR DELETE OR UPDATE ON "C21-703-7"."Shelf"
+CREATE OR REPLACE TRIGGER weight_restrictions_trigger BEFORE INSERT OR DELETE OR UPDATE ON "C21-703-7"."Shelf"
 FOR EACH ROW
 EXECUTE PROCEDURE weight_restrictions_trigger_func();
-
-
-UPDATE "C21-703-7"."Shelf" SET max_weight = 10 where shelf_id = 1;
-
 
 
 --1
