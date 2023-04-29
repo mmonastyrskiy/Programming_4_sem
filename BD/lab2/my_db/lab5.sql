@@ -19,6 +19,9 @@ UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left-new.weight where shelf_
 else
 RAISE EXCEPTION 'Нарушены правила использования мест на полке: %', new.shelf_id;
 END IF;
+
+elsif (TG_OP = 'UPDATE') then
+UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left - new.weight + old.weight where shelf_id = new.shelf_id;
 END IF;
 END;
 
@@ -52,7 +55,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE place_restrictions_trigger_func();
 
 
-CREATE TRIGGER weight_restrictions_trigger BEFORE INSERT OR DELETE OR UPDATE ON "C21-703-7"."product"
+CREATE TRIGGER weight_restrictions_trigger BEFORE INSERT OR DELETE OR UPDATE ON "C21-703-7"."Shelf"
 FOR EACH ROW
 EXECUTE PROCEDURE weight_restrictions_trigger_func();
 
