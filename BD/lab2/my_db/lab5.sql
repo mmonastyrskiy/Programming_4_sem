@@ -2,7 +2,8 @@
 CREATE OR REPLACE FUNCTION place_restrictions_trigger_func() RETURNS trigger as $$
 BEGIN
 if(TG_OP = 'DELETE') then
-if(((SELECT spaces_left+1 from "C21-703-7"."Shelf" where shelf_id = old.shelf_id) <= (SELECT max_spaces from "C21-703-7"."Shelf" where shelf_id = old.shelf_id)))
+if(((SELECT spaces_left+1 from "C21-703-7"."Shelf" where shelf_id = old.shelf_id) <= 
+    (SELECT max_spaces from "C21-703-7"."Shelf" where shelf_id = old.shelf_id)))
   then
 UPDATE "C21-703-7"."Shelf" SET spaces_left = spaces_left+1 where shelf_id = old.shelf_id;
 UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left+old.weight where shelf_id = old.shelf_id;
@@ -28,7 +29,8 @@ $$ language plpgsql;
 CREATE OR REPLACE FUNCTION weight_restrictions_trigger_func() RETURNS trigger as $$
 BEGIN
 if (TG_OP = 'DELETE') then
-if((SELECT weight_left + old.weight from "C21-703-7"."Shelf" where shelf_id = old.shelf_id) > (SELECT max_weight from "C21-703-7"."Shelf" where shelf_id = old.shelf_id)) then
+if((SELECT weight_left + old.weight from "C21-703-7"."Shelf" where shelf_id = old.shelf_id) > 
+    (SELECT max_weight from "C21-703-7"."Shelf" where shelf_id = old.shelf_id)) then
 RAISE EXCEPTION 'Ошибка нагрузки на полке: %', old.shelf_id;
 END IF;
 
