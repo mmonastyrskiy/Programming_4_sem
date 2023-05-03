@@ -10,10 +10,12 @@ class DbConnection:
         self.password = config.password
         self.host = config.host
         self.prefix = config.dbtableprefix
+        self.port = config.port
         self.conn = psycopg2.connect(dbname = self.dbname,
                                     user = self.user, 
                                     password = self.password,
-                                    host = self.host)
+                                    host = self.host,
+                                    port=self.port)
 
     def __del__(self):
         if self.conn:
@@ -31,4 +33,3 @@ class DbConnection:
         self.conn.commit()
         return (result[0][0] == 1)
         
-
