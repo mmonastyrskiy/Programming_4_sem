@@ -34,6 +34,7 @@ class DbTable:
         arr = [k + " " + " ".join(v) for k, v in sorted(self.columns().items(), key = lambda x: x[0])]
         sql += ", ".join(arr + self.table_constraints())
         sql += ")"
+        print(sql)
         cur = self.dbconn.conn.cursor()
         cur.execute(sql)
         self.dbconn.conn.commit()
