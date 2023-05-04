@@ -5,8 +5,8 @@ class ShelfTable(DbTable):
         return self.dbconn.prefix + "Shelf"
     def columns(self):
         return {
-        "shelf_id":["integer","PRIMARY KEY"],
-        "room_id":["integer",'REFERENCES "C21-703-7"."Room"'],
+        "shelf_id":["serial","PRIMARY KEY"],
+        "room_id":["integer",'REFERENCES "C21-703-7".Room'],
         "max_spaces":["integer","NOT NULL"],
         "spaces_left":["integer", "NOT NULL"],
         "slot_w":["numeric(7,0)", "NOT NULL"],
@@ -17,15 +17,16 @@ class ShelfTable(DbTable):
         }
 
     def table_constraints(self):
-        return
-        [
+        return[
         "CONSTRAINT positive_size_slot_w_shelf CHECK(slot_w >0)",
         "CONSTRAINT positive_size_slot_h_shelf CHECK(slot_h >0)",
         "CONSTRAINT positive_size_slot_l_shelf CHECK(slot_l >0)",
         "CONSTRAINT positive_weight_shelf CHECK(max_weight >0)",
         "CONSTRAINT positive_weight_left_shelf CHECK(weight_left >0)",
-        "CONSTRAINT wight_left_le_weight CHECK(weight_left <= max_weight)"]
-
+        "CONSTRAINT wight_left_le_weight CHECK(weight_left <= max_weight)"
+        ]
+    def primary_key(self):
+        return ['shelf_id']
     def all_by_room_id(self, room_id):
         sql = "SELECT * FROM " + self.table_name()
         sql += " WHERE room_id = %s"

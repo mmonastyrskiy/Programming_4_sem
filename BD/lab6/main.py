@@ -18,14 +18,34 @@ class Main:
 
     def db_init(self):
         rt = RoomTable()
+        st = ShelfTable()
+        st.drop()
+        rt.drop()
         rt.create()
+        st.create()
         return
 
     def db_insert_somethings(self):
-        pass
+        rt = RoomTable()
+        st = ShelfTable()
+        rt.insert_one(['Room1',50,50,20,60,18,32])
+        rt.insert_one(['Room2',500,500,40,100,22,32])
+        rt.insert_one(['Room3',50,50,20,60,18,32])
+        rt.insert_one(['Garage1',10000,10000,40,100,22,32])
+        rt.insert_one(['Room4',50,50,20,60,18,32])
+
+        st.insert_one([1,10,10,500,400,300,500,500])
+        st.insert_one([1,50,50,500,400,400,600,600])
+        st.insert_one([2,40,40,500,500,500,500,500])
+        st.insert_one([3,40,40,500,500,500,500,500])
+        st.insert_one([4,5,5,500,500,500,40,40])
 
     def db_drop(self):
-        return
+        rt = RoomTable()
+        st = ShelfTable()
+        st.drop()
+        rt.drop()
+        
 
     def show_main_menu(self):
         menu = """Добро пожаловать! 

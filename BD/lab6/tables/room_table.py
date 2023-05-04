@@ -6,7 +6,7 @@ class RoomTable(DbTable):
 
     def columns(self):
         return {
-        "id":["integer","PRIMARY KEY"],
+        "id":["serial","PRIMARY KEY"],
         "name": ["character varying(50)", "NOT NULL"],
         "space": ["numeric(7,2)", "NOT NULL"],
         "space_left":["numeric(7,2)", "NOT NULL"],

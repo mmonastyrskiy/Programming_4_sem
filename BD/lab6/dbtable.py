@@ -15,15 +15,15 @@ class DbTable:
         return {"test": ["integer", "PRIMARY KEY"]}
 
     def column_names(self):
-        return sorted(self.columns().keys(), key = lambda x: x)
+        return self.columns().keys()
 
     def primary_key(self):
         return ['id']
 
     def column_names_without_id(self):
-        res = sorted(self.columns().keys(), key = lambda x: x)
-        if 'id' in res:
-            res.remove('id')
+        res = list(self.columns().keys())
+        for col in self.primary_key():
+            res.remove(col)
         return res
 
     def table_constraints(self):
@@ -31,10 +31,11 @@ class DbTable:
 
     def create(self):
         sql = "CREATE TABLE " + self.table_name() + "("
-        arr = [k + " " + " ".join(v) for k, v in sorted(self.columns().items(), key = lambda x: x[0])]
+        arr = [k + " " + " ".join(v) for k, v in self.columns().items()]
+        #print(arr)
         sql += ", ".join(arr + self.table_constraints())
         sql += ")"
-        print(sql)
+        #print(sql)
         cur = self.dbconn.conn.cursor()
         cur.execute(sql)
         self.dbconn.conn.commit()
@@ -57,6 +58,7 @@ class DbTable:
         sql += ", ".join(self.column_names_without_id()) + ") VALUES("
         sql += ", ".join(vals) + ")"
         cur = self.dbconn.conn.cursor()
+        #print(sql)
         cur.execute(sql)
         self.dbconn.conn.commit()
         return
@@ -85,4 +87,4 @@ class DbTable:
         cur.execute(sql)
         return cur.fetchall()        
     
-    
+
