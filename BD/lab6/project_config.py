@@ -6,7 +6,7 @@ class ProjectConfig:
     """Класс считывает базовые настройки из файла config.yaml"""
 
     def __init__(self):
-        with open('config.yaml') as f:
+        with open('config_notebook.yaml') as f:
             config = yaml.safe_load(f)
             self.dbname = config['dbname']
             self.user = config['user']
