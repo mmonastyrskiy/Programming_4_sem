@@ -84,4 +84,5 @@ class DbTable:
         cur = self.dbconn.conn.cursor()
         cur.execute(sql)
         return cur.fetchall()        
-        
+    
+    
