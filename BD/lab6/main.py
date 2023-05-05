@@ -6,6 +6,8 @@ from dbconnection import *
 from dbtable import DbTable
 from room_table import RoomTable
 from shelf_table import ShelfTable
+import colorama
+
 
 class Main:
 
@@ -83,6 +85,8 @@ class Main:
             elif next_step == "6" or next_step == "7":
                 print("Пока не реализовано!")
                 next_step = "5"
+            elif next_step = "3":
+                RT.add_rooms()
             elif next_step == "5":
                 RT = RoomTable()
                 RT.show_rooms()

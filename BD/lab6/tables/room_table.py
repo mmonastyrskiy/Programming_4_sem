@@ -57,5 +57,44 @@ class RoomTable(DbTable):
     9 - выход."""
         print(menu)
         return
-	
+
+    def __call_creation_wizard(self)->list:
+        name = input("Введите название комнаты: ")
+        try:
+            space = float(input("Введите объем комнаты: "))
+        except ValueError as e:
+            print("Введено неверное число")
+            return []
+
+        try:
+            minh = float(input("Введите минимальную влажность"))
+            maxh = float(input("Введите максимальную влажность"))
+            if not((0<= minh <= 100) and (0 <= maxh <= 100) and minh <= maxh):
+                raise ValueError
+        except ValueError as e:
+            print("Одна или обе из влажностей введена(ы) неверно")
+            return []
+
+        try:
+            mint = float(input("Введите минимальную температуру"))
+            maxt = float(input("Введите максимальную температуру"))
+            if not((0<= mint <= 100) and (0 <= maxt <= 100) and mint <= maxt):
+                raise ValueError
+        except ValueError as e:
+            print("Одна или обе из температур введена(ы) неверно")
+            return []
+        return [name,space,space,minh,maxh,mint,maxt]
+        
+
+
+
+
+    def add_rooms(self)-> None:
+        data = self.__call_creation_wizard()
+        if data:
+            self.insert_one(data)
+            print("комната создана")
+            return
+        print("комната не создана, ошибка")
+        return
 
