@@ -30,7 +30,7 @@ class ShelfTable(DbTable):
     def all_by_room_id(self, room_id):
         sql = "SELECT * FROM " + self.table_name()
         sql += " WHERE room_id = %s"
-        sql += " ORDER BY shelf_id "
+        sql += " ORDER BY "
         sql += ", ".join(self.primary_key())
         cur = self.dbconn.conn.cursor()
         cur.execute(sql, str(room_id))
