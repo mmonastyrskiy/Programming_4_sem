@@ -86,6 +86,14 @@ class DbTable:
         sql += ", ".join(self.primary_key())
         cur = self.dbconn.conn.cursor()
         cur.execute(sql)
-        return cur.fetchall()        
+        return cur.fetchall()
+    def create_list_of_ids(self):
+        sql = f"SELECT {self.primary_key()[0]} FROM " + self.table_name()
+        cur = self.dbconn.conn.cursor()
+        cur.execute(sql)
+        ids = [x[0] for x in cur.fetchall()]
+        #print(ids)
+        return ids
+
     
 

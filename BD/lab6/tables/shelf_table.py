@@ -51,7 +51,14 @@ class ShelfTable(DbTable):
 
 
     def __call_creation_wizard(self)->list:
-        rid = int(input("В какую комнату добавить новую полку?: "))
+        try:
+            rid = int(input("В какую комнату добавить новую полку?: "))
+            if rid not in self.create_list_of_ids():
+                raise ValueError
+        except ValueError as e:
+            print("ошибка, введите верное число")
+            return []
+
         try:
             max_spaces = int(input("Введите количество мест на полке: "))
         except ValueError as e:
