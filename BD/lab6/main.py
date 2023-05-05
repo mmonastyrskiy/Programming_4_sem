@@ -112,7 +112,8 @@ class Main:
             RT = RoomTable()
             RT.show_rooms()
             rid = int(input("выберите комнату для просмотра полок: "))
-            ST.all_by_room_id(rid)
+            data = ST.all_by_room_id(rid)
+            print(data)
             return
     def main_cycle(self):
         current_menu = "0"
