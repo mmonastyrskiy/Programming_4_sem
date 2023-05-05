@@ -27,13 +27,14 @@ class ShelfTable(DbTable):
         ]
     def primary_key(self)->list:
         return ['shelf_id']
+        
     def all_by_room_id(self, room_id:int):
         sql = "SELECT * FROM " + self.table_name()
-        sql += " WHERE room_id = %s"
+        sql += " WHERE room_id = (%s)"
         sql += " ORDER BY "
         sql += ", ".join(self.primary_key())
         cur = self.dbconn.conn.cursor()
-        cur.execute(sql, str(room_id))
+        cur.execute(sql, (str(room_id),))
         return cur.fetchall()
 
     def delete_shelf(self):

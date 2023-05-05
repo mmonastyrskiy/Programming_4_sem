@@ -84,7 +84,12 @@ class Main:
                 print("Пока не реализовано!")
                 next_step = "5"
             elif next_step == "5":
-                next_step = self.show_phones_by_people()
+                RT = RoomTable()
+                RT.show_rooms()
+                rid = int(input("выберите комнату для просмотра полок: "))
+                data = ST.all_by_room_id(rid)
+                print(data)
+                next_step = "0"
             elif next_step != "0" and next_step != "9" and next_step != "3":
                 print("Выбрано неверное число! Повторите ввод!")
                 return "1"
