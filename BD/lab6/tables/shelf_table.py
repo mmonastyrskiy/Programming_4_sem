@@ -37,39 +37,47 @@ class ShelfTable(DbTable):
         return cur.fetchall()
 
     def delete_shelf(self):
-        id_ = int(input("Введите номер полки, которую хотите удалить: ").strip())
+        try:
+            id_ = int(input("Введите номер полки, которую хотите удалить: ").strip())
+        except ValueError as e:
+            print("неверно! Введите число!")
+            return
         sql = "DELETE FROM " + self.table_name()
-        sql += f" WHERE id = {str(id_)}"
+        sql += f" WHERE {self.primary_key()[0]} = (%s)"
         print(sql)
         cur = self.dbconn.conn.cursor()
-        cur.execute(sql)
+        cur.execute(sql,(str(id_),))
         self.dbconn.conn.commit()
 
 
     def __call_creation_wizard(self)->list:
-        from room_table import RoomTable as RT
-        RT = RT()
-        sql = f"SELECT max(id) FROM {RT.table_name()}"
-        cur = self.dbconn.conn.cursor()
-        cur.execute(sql)
-        new_id = cur.fetchone()[0] + 1
-        RT.show_rooms()
         rid = int(input("В какую комнату добавить новую полку?: "))
-        max_spaces = int(input("Введите количество мест на полке: "))
+        try:
+            max_spaces = int(input("Введите количество мест на полке: "))
+        except ValueError as e:
+            print("Введите число, то что ты ввел, редиска, не число")
+            return []
         if max_spaces <= 0:
             print("Недопустимое количество мест")
             return []
         spaces_left = max_spaces
-        l,w,h = map(float, input("Введите габариты места на полке, разделяя их пробелом: ").split())
+        try:
+            l,w,h = map(float, input("Введите габариты места на полке, разделяя их пробелом: ").split())
+        except ValueError as e:
+            print("ты в курсе что такое три числа?")
+            return []
         if(l <= 0 or w <= 0 or h <= 0):
             print("Недопустимый габарит")
             return []
-        max_weight = float(input("Введите максимальный нагрузочный вес полки: "))
+        try:
+            max_weight = float(input("Введите максимальный нагрузочный вес полки: "))
+        except ValueError as e:
+            print("Вес - число, а не то что ты ввел")
         if max_weight <= 0:
             print("Недопустимый вес")
             return []
         weight_left = max_weight
-        return [new_id,rid,max_spaces,spaces_left,l,w,h,max_weight,weight_left]
+        return [rid,max_spaces,spaces_left,w,h,l,max_weight,weight_left]
 
 
 
