@@ -1,3 +1,8 @@
+
+
+DROP SEQUENCE IF EXISTS room_generator;
+DROP SEQUENCE IF EXISTS room_generator;
+
 -- Очищаем структуру БД
 TRUNCATE "C21-703-7"."Client" CASCADE;
 TRUNCATE "C21-703-7"."Contract" CASCADE;

@@ -6,7 +6,7 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS "C21-703-7"."Room"
 (
     id integer,
-    name character varying NOT NULL,
+    name character varying(50) NOT NULL,
     space numeric(7,2) NOT NULL,
     space_left numeric(7,2) NOT NULL,
     min_humidity numeric(8,2) NOT NULL,

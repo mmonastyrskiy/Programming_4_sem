@@ -1,4 +1,6 @@
 --0
+DROP TRIGGER IF EXISTS place_restrictions_trigger ON "C21-703-7".product CASCADE;
+
 CREATE OR REPLACE FUNCTION place_restrictions_trigger_func() RETURNS trigger as $$
 BEGIN
 if(TG_OP = 'DELETE') then
@@ -21,45 +23,34 @@ RAISE EXCEPTION 'Нарушены правила использования ме
 END IF;
 
 elsif (TG_OP = 'UPDATE') then
-UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left - new.weight + old.weight where shelf_id = new.shelf_id;
+UPDATE "C21-703-7"."Shelf" SET spaces_left = spaces_left +1 WHERE shelf_id = old.shelf_id;
+UPDATE "C21-703-7"."Shelf" SET spaces_left = spaces_left -1 WHERE shelf_id = new.shelf_id;
+UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left + old.weight WHERE shelf_id = old.shelf_id;
+UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left - new.weight WHERE shelf_id = new.shelf_id;
 END IF;
+RETURN new;
 END;
 $$ language plpgsql;
 
-CREATE OR REPLACE FUNCTION weight_restrictions_trigger_func() RETURNS trigger as $$
-BEGIN
-if (TG_OP = 'DELETE') then
-if((SELECT weight_left + old.weight from "C21-703-7"."Shelf" where shelf_id = old.shelf_id) > 
-    (SELECT max_weight from "C21-703-7"."Shelf" where shelf_id = old.shelf_id)) then
-RAISE EXCEPTION 'Ошибка нагрузки на полке: %', old.shelf_id;
-END IF;
-
-elsif (TG_OP = 'INSERT') then
-if((SELECT weight_left - new.weight from "C21-703-7"."Shelf" where shelf_id = new.shelf_id) < 0) then
-RAISE EXCEPTION 'Ошибка нагрузки на полке: %', new.shelf_id;
-END IF;
-
-elsif (TG_OP = 'UPDATE') then
-if (old.weight - new.weight != 0) then
-if ((SELECT weight_left - new.weight + old.weight from "C21-703-7"."Shelf" where shelf_id = new.shelf_id)<0) then
-RAISE EXCEPTION 'Ошибка нагрузки на полке: %', new.shelf_id;
-else
-UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left - new.weight + old.weight where shelf_id = new.shelf_id;
-END IF;
-END IF;
-END IF;
-
-END;
-
-$$ language plpgsql;
-CREATE OR REPLACE TRIGGER place_restrictions_trigger BEFORE INSERT OR DELETE ON "C21-703-7"."product"
+CREATE OR REPLACE TRIGGER place_restrictions_trigger BEFORE INSERT OR DELETE OR UPDATE ON "C21-703-7"."product"
 FOR EACH ROW
-EXECUTE PROCEDURE place_restrictions_trigger_func();
+EXECUTE PROCEDURE place_restrictions_trigger_func()
 
 
-CREATE OR REPLACE TRIGGER weight_restrictions_trigger BEFORE INSERT OR DELETE OR UPDATE ON "C21-703-7"."Shelf"
-FOR EACH ROW
-EXECUTE PROCEDURE weight_restrictions_trigger_func();
+
+SELECT * FROM "C21-703-7"."Shelf";
+INSERT INTO "C21-703-7"."product" Values(nextval('pid_generator'),110,120,130,now(),1,60,30,20,50,5,slot_finder(5),10);
+INSERT INTO "C21-703-7"."product" Values(nextval('pid_generator'),110,120,130,now(),1,60,30,20,50,5,slot_finder(5),1);
+INSERT INTO "C21-703-7"."product" Values(nextval('pid_generator'),110,120,130,now(),1,60,30,20,50,5,slot_finder(5),1);
+INSERT INTO "C21-703-7"."product" Values(nextval('pid_generator'),110,120,130,now(),1,60,30,20,50,5,slot_finder(5),1);
+INSERT INTO "C21-703-7"."product" Values(nextval('pid_generator'),110,120,130,now(),1,60,30,20,50,5,slot_finder(5),1);
+SELECT * FROM "C21-703-7"."Shelf";
+
+INSERT INTO "C21-703-7"."product" Values(nextval('pid_generator'),300,300,300,now(),2,60,30,20,50,2,slot_finder(2),599.99);
+SELECT * FROM "C21-703-7"."Shelf";
+UPDATE "C21-703-7".product SET shelf_id = 3 where shelf_id = 2;
+DELETE FROM "C21-703-7".product WHERE shelf_id = 5;
+
 
 
 --1
