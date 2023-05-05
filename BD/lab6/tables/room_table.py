@@ -1,10 +1,10 @@
 from dbtable import *
 
 class RoomTable(DbTable):
-    def table_name(self):
+    def table_name(self) -> str:
         return self.dbconn.prefix + "Room"
 
-    def columns(self):
+    def columns(self)->dict:
         return {
         "id":["serial","PRIMARY KEY"],
         "name": ["character varying(50)", "NOT NULL"],
@@ -14,7 +14,7 @@ class RoomTable(DbTable):
         "max_humidity":["numeric(8,2)" ,"NOT NULL"],
         "min_temp": ["numeric(5,2)", "NOT NULL"],
         "max_temp":["numeric(5,2)","NOT NULL"]}
-    def table_constraints (self):
+    def table_constraints (self)->list:
         return ([
         "CONSTRAINT uni_room_name UNIQUE (name)",
 	   "CONSTRAINT positive_volume_left_room CHECK(space_left >0)",
@@ -26,17 +26,23 @@ class RoomTable(DbTable):
 
 
 
-    def delete_room(self):
-        id_ = int(input("Введите номер комнаты, которую хотите удалить: ").strip())
+    def delete_room(self)->None:
+        try:
+            id_ = int(input("Введите номер комнаты, которую хотите удалить: ").strip())
+            print(id_)
+        except ValueError as e:
+            print("Введите номер по списку, введеное значение - не число")
+            return
         sql = "DELETE FROM " + self.table_name()
         sql += f" WHERE id = (%s)"
-        print(sql)
+        #print(sql)
         cur = self.dbconn.conn.cursor()
-        cur.execute(sql, str(id_))
+        id_ = str(id_)
+        cur.execute(sql, (id_,))
         self.dbconn.conn.commit()
         self.show_rooms()
 
-    def show_rooms(self):
+    def show_rooms(self)->None:
         menu = """Просмотр списка комнат!
 №\tИмя\tОбъем\t"""
         print(menu)

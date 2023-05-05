@@ -5,31 +5,31 @@ from dbconnection import *
 class DbTable:
     dbconn = None
 
-    def __init__(self):
+    def __init__(self)->None:
         return
 
-    def table_name(self):
+    def table_name(self)->str:
         return self.dbconn.prefix + "table"
 
-    def columns(self):
+    def columns(self)->dict:
         return {"test": ["integer", "PRIMARY KEY"]}
 
-    def column_names(self):
+    def column_names(self)->list:
         return self.columns().keys()
 
-    def primary_key(self):
+    def primary_key(self)->list:
         return ['id']
 
-    def column_names_without_id(self):
+    def column_names_without_id(self)->list:
         res = list(self.columns().keys())
         for col in self.primary_key():
             res.remove(col)
         return res
 
-    def table_constraints(self):
+    def table_constraints(self)->list:
         return []
 
-    def create(self):
+    def create(self)->None:
         sql = "CREATE TABLE " + self.table_name() + "("
         arr = [k + " " + " ".join(v) for k, v in self.columns().items()]
         #print(arr)
@@ -41,14 +41,14 @@ class DbTable:
         self.dbconn.conn.commit()
         return
 
-    def drop(self):
+    def drop(self)->None:
         sql = "DROP TABLE IF EXISTS " + self.table_name()
         cur = self.dbconn.conn.cursor()
         cur.execute(sql)
         self.dbconn.conn.commit()
         return
 
-    def insert_one(self, vals):
+    def insert_one(self, vals:list)->None:
         for i in range(0, len(vals)):
             if type(vals[i]) == str:
                 vals[i] = "'" + vals[i] + "'"
@@ -64,7 +64,7 @@ class DbTable:
         self.dbconn.conn.commit()
         return
 
-    def first(self):
+    def first(self)->list:
         sql = "SELECT * FROM " + self.table_name()
         sql += " ORDER BY "
         sql += ", ".join(self.primary_key())
@@ -72,7 +72,7 @@ class DbTable:
         cur.execute(sql)
         return cur.fetchone()        
 
-    def last(self):
+    def last(self)->list:
         sql = "SELECT * FROM " + self.table_name()
         sql += " ORDER BY "
         sql += ", ".join([x + " DESC" for x in self.primary_key()])
@@ -80,7 +80,7 @@ class DbTable:
         cur.execute(sql)
         return cur.fetchone()
 
-    def all(self):
+    def all(self)->list:
         sql = "SELECT * FROM " + self.table_name()
         sql += " ORDER BY "
         sql += ", ".join(self.primary_key())

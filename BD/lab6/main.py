@@ -135,6 +135,8 @@ class Main:
         print("До свидания!")    
         return
 
+
+
     def test(self):
         DbTable.dbconn.test()
 

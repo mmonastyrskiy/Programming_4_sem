@@ -1,12 +1,12 @@
 from dbtable import *
 
 class ShelfTable(DbTable):
-    def table_name(self):
+    def table_name(self)->str:
         return self.dbconn.prefix + "Shelf"
-    def columns(self):
+    def columns(self)->dict:
         return {
         "shelf_id":["serial","PRIMARY KEY"],
-        "room_id":["integer",'REFERENCES "C21-703-7".Room'],
+        "room_id":["integer",'REFERENCES "C21-703-7".Room ON DELETE CASCADE'],
         "max_spaces":["integer","NOT NULL"],
         "spaces_left":["integer", "NOT NULL"],
         "slot_w":["numeric(7,0)", "NOT NULL"],
@@ -16,7 +16,7 @@ class ShelfTable(DbTable):
         "weight_left":["numeric(7,2)", "NOT NULL"]
         }
 
-    def table_constraints(self):
+    def table_constraints(self)->list:
         return[
         "CONSTRAINT positive_size_slot_w_shelf CHECK(slot_w >0)",
         "CONSTRAINT positive_size_slot_h_shelf CHECK(slot_h >0)",
@@ -25,9 +25,9 @@ class ShelfTable(DbTable):
         "CONSTRAINT positive_weight_left_shelf CHECK(weight_left >0)",
         "CONSTRAINT wight_left_le_weight CHECK(weight_left <= max_weight)"
         ]
-    def primary_key(self):
+    def primary_key(self)->list:
         return ['shelf_id']
-    def all_by_room_id(self, room_id):
+    def all_by_room_id(self, room_id:int):
         sql = "SELECT * FROM " + self.table_name()
         sql += " WHERE room_id = %s"
         sql += " ORDER BY "
@@ -46,7 +46,7 @@ class ShelfTable(DbTable):
         self.dbconn.conn.commit()
 
 
-    def __call_creation_wizard(self):
+    def __call_creation_wizard(self)->list:
         from room_table import RoomTable as RT
         RT = RT()
         sql = f"SELECT max(id) FROM {RT.table_name()}"
@@ -70,14 +70,13 @@ class ShelfTable(DbTable):
             return []
         weight_left = max_weight
         return [new_id,rid,max_spaces,spaces_left,l,w,h,max_weight,weight_left]
-        ## TODO: проверка того что id комнаты валидный
 
 
 
 
 
 
-    def add_shelf_attached_to_room(self):
+    def add_shelf_attached_to_room(self)-> None:
         data = self.__call_creation_wizard()
         if data:
             self.insert_one(data)
@@ -87,7 +86,7 @@ class ShelfTable(DbTable):
         return
 
 
-    def del_shelf_by_room(shelf,room_id):
+    def del_shelf_by_room(self,room_id:int):
         lst = self.all_by_room_id(room_id)
         for i in lst:
             print(str(i[0]) + "\t" + str(i[1]) + "\t" + str(i[2]))
