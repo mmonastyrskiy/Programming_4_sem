@@ -55,11 +55,12 @@ class DbTable:
             else:
                 vals[i] = str(vals[i])
         sql = "INSERT INTO " + self.table_name() + "("
-        sql += ", ".join(self.column_names_without_id()) + ") VALUES("
-        sql += ", ".join(vals) + ")"
+        sql += ",".join(self.column_names_without_id()) + ") VALUES("
+        sql +=  "(%s)," * (len(vals)-1) + "(%s)" + ")"
+        print(sql)
         cur = self.dbconn.conn.cursor()
         #print(sql)
-        cur.execute(sql)
+        cur.execute(sql, vals)
         self.dbconn.conn.commit()
         return
 

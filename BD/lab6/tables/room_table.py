@@ -29,10 +29,10 @@ class RoomTable(DbTable):
     def delete_room(self):
         id_ = int(input("Введите номер комнаты, которую хотите удалить: ").strip())
         sql = "DELETE FROM " + self.table_name()
-        sql += f" WHERE id = {str(id_)}"
+        sql += f" WHERE id = (%s)"
         print(sql)
         cur = self.dbconn.conn.cursor()
-        cur.execute(sql)
+        cur.execute(sql, str(id_))
         self.dbconn.conn.commit()
         self.show_rooms()
 
