@@ -92,6 +92,7 @@ class Main:
                 RT = RoomTable()
                 RT.add_rooms()
             elif next_step == "5":
+                ST = ShelfTable()
                 RT = RoomTable()
                 RT.show_rooms()
                 rid = int(input("выберите комнату для просмотра полок: "))
@@ -109,6 +110,7 @@ class Main:
         3 - добавление новой полки к комнате;
         4 - удаление полки;
         5 - просмотр стеллажей комнаты;
+        6 - редактирование полки
         9 - выход."""
         print(menu)
         ST = ShelfTable()
@@ -127,6 +129,8 @@ class Main:
             rid = int(input("выберите комнату для просмотра полок: "))
             data = ST.all_by_room_id(rid)
             print(data)
+        elif user_chose == "6":
+            ST.edit_shelf()
             return
     def main_cycle(self):
         current_menu = "0"

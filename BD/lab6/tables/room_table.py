@@ -111,13 +111,19 @@ class RoomTable(DbTable):
             #print(sql)
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
-            return True:
+            return True
         elif (col_2edit == 1):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
             sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
-                float(new_data)
+            sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
+            cur = self.dbconn.conn.cursor()
+            cur.execute(sql, (str(id_),))
+            recived = list(cur.fetchone())[0]
+
+                if not(float(new_data) >= recived):
+                    raise ValueError
             except ValueError as e:
                 return False
             cur.execute(sql, [new_data, str(id_)])
@@ -190,7 +196,7 @@ class RoomTable(DbTable):
                 raise ValueError
         except ValueError as e:
             print("Введите правильное число")
-        sql = f"SELECT * FROM {self.table_name()} WHERE id = (%s)"
+        sql = f"SELECT * FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
         cur = self.dbconn.conn.cursor()
         cur.execute(sql, (str(inp),))
         recived = list(cur.fetchone())[1:]
