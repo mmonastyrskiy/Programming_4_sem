@@ -13,7 +13,7 @@ class ShelfTable(DbTable):
         """
         return {
         "shelf_id":["serial","PRIMARY KEY"],
-        "room_id":["integer",'REFERENCES "C21-703-7".Room ON DELETE CASCADE'],
+        "room_id":["integer",f'REFERENCES "{self.dbconn.prefix}".Room ON DELETE CASCADE'],
         "max_spaces":["integer","NOT NULL"],
         "spaces_left":["integer", "NOT NULL"],
         "slot_w":["numeric(7,0)", "NOT NULL"],

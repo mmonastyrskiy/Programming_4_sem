@@ -141,7 +141,7 @@ class RoomTable(DbTable):
             return True
         elif (col_2edit == 1):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
                 sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
@@ -239,7 +239,7 @@ class RoomTable(DbTable):
         except ValueError as e:
             print("Введено неверное число")
         new_data = input("Введите новое значение поля: ")
-        if edit_check(inp,col_2edit,new_data):
+        if self.edit_check(inp,col_2edit,new_data):
             print("Изменения применены")
             return
         print("Во внесении изменений отказно, неверное новое значение")
