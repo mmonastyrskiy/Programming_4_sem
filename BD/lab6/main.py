@@ -1,7 +1,7 @@
 import sys
 import colorama
 sys.path.append('tables')
-
+sys.path.append('lib')
 from project_config import *
 from dbconnection import *
 from dbtable import DbTable
@@ -123,7 +123,7 @@ class Main:
             else:
                 return next_step
     def display_shelves_menu(self):
-         """
+        """
          Меню полки + обработчик перехода
          """
         menu = """Дальнейшие операции:

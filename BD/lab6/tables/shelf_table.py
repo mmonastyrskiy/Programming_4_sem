@@ -156,7 +156,7 @@ class ShelfTable(DbTable):
         """
         проверка выполнения ограничений целостности при редактировании полки
         """
-        elif (col_2edit == 0):
+        if (col_2edit == 0):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
             sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
             cur = self.dbconn.conn.cursor()
@@ -175,13 +175,13 @@ class ShelfTable(DbTable):
             sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
-            sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
-            cur = self.dbconn.conn.cursor()
-            cur.execute(sql, (str(id_),))
-            recived = list(cur.fetchone())[0]
+                sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
+                cur = self.dbconn.conn.cursor()
+                cur.execute(sql, (str(id_),))
+                recived = list(cur.fetchone())[0]
 
-            if not(float(new_data) >= recived):
-                raise ValueError
+                if not(float(new_data) >= recived):
+                    raise ValueError
             except ValueError as e:
                 return False
             cur.execute(sql, [new_data, str(id_)])
@@ -225,13 +225,13 @@ class ShelfTable(DbTable):
             sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
-            sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
-            cur = self.dbconn.conn.cursor()
-            cur.execute(sql, (str(id_),))
-            recived = list(cur.fetchone())[0]
+                sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
+                cur = self.dbconn.conn.cursor()
+                cur.execute(sql, (str(id_),))
+                recived = list(cur.fetchone())[0]
 
-            if not(float(new_data) >= recived):
-                raise ValueError
+                if not(float(new_data) >= recived):
+                    raise ValueError
             except ValueError as e:
                 return False
             cur.execute(sql, [new_data, str(id_)])

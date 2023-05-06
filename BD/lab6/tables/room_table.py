@@ -2,7 +2,7 @@ from dbtable import *
 
 class RoomTable(DbTable):
     def table_name(self) -> str:
-            """
+        """
     Возвращает строку схема + название таблицы
     """
         return self.dbconn.prefix + "Room"
@@ -40,7 +40,7 @@ class RoomTable(DbTable):
 
     def delete_room(self)->None:
         """
-        Отрабатывает удаление таблицы
+        Отрабатывает удаление комнаты
         """
         try:
             id_ = int(input("Введите номер комнаты, которую хотите удалить: ").strip())
@@ -144,10 +144,10 @@ class RoomTable(DbTable):
             sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
-            sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
-            cur = self.dbconn.conn.cursor()
-            cur.execute(sql, (str(id_),))
-            recived = list(cur.fetchone())[0]
+                sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
+                cur = self.dbconn.conn.cursor()
+                cur.execute(sql, (str(id_),))
+                recived = list(cur.fetchone())[0]
 
                 if not(float(new_data) >= recived):
                     raise ValueError
