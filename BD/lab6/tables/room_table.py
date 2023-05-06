@@ -2,9 +2,16 @@ from dbtable import *
 
 class RoomTable(DbTable):
     def table_name(self) -> str:
+            """
+    Возвращает строку схема + название таблицы
+    """
         return self.dbconn.prefix + "Room"
 
+
     def columns(self)->dict:
+        """
+        Возвращает список полей + ограничения целостности на конкретные поля
+        """
         return {
         "id":["serial","PRIMARY KEY"],
         "name": ["character varying(50)", "NOT NULL"],
@@ -14,7 +21,12 @@ class RoomTable(DbTable):
         "max_humidity":["numeric(8,2)" ,"NOT NULL"],
         "min_temp": ["numeric(5,2)", "NOT NULL"],
         "max_temp":["numeric(5,2)","NOT NULL"]}
+
+
     def table_constraints (self)->list:
+        """
+        Возвращает список общих ограничений целостности
+        """
         return ([
         "CONSTRAINT uni_room_name UNIQUE (name)",
 	   "CONSTRAINT positive_volume_left_room CHECK(space_left >0)",
@@ -27,6 +39,9 @@ class RoomTable(DbTable):
 
 
     def delete_room(self)->None:
+        """
+        Отрабатывает удаление таблицы
+        """
         try:
             id_ = int(input("Введите номер комнаты, которую хотите удалить: ").strip())
             print(id_)
@@ -42,7 +57,11 @@ class RoomTable(DbTable):
         self.dbconn.conn.commit()
         self.show_rooms()
 
+
     def show_rooms(self)->None:
+        """
+        отобразить список комнат в терминал
+        """
         menu = """Просмотр списка комнат!
 №\tИмя\tОбъем\t"""
         print(menu)
@@ -59,7 +78,11 @@ class RoomTable(DbTable):
         print(menu)
         return
 
+
     def __call_creation_wizard(self)->list:
+        """
+        Запуск мастера создания комнаты
+        """
         name = input("Введите название комнаты: ")
         try:
             space = float(input("Введите объем комнаты: "))
@@ -91,6 +114,9 @@ class RoomTable(DbTable):
 
 
     def add_rooms(self)-> None:
+        """
+        обработчик создания комнаты
+        """
         data = self.__call_creation_wizard()
         if data:
             self.insert_one(data)
@@ -101,9 +127,10 @@ class RoomTable(DbTable):
 
 
 
-
-
     def edit_check(self,id_:int, col_2edit: int, new_data:str)-> bool:
+        """
+        Контроль за соблюдением ограничений целостности при изменении полей в методе edit_room
+        """
         if(col_2edit == 0):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
             sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
@@ -186,9 +213,10 @@ class RoomTable(DbTable):
             return False
 
 
-
-
     def edit_room(self):
+        """
+        Изменение параметров существующей сущности комнаты
+        """
         self.show_rooms()
         try:
             inp = int(input("Выберите комнату которую хотите изменить: "))

@@ -1,4 +1,5 @@
 import sys
+import colorama
 sys.path.append('tables')
 
 from project_config import *
@@ -6,7 +7,6 @@ from dbconnection import *
 from dbtable import DbTable
 from room_table import RoomTable
 from shelf_table import ShelfTable
-import colorama
 
 
 class Main:
@@ -19,6 +19,9 @@ class Main:
         return
 
     def db_init(self):
+        """
+        инициализация таблиц
+        """
         rt = RoomTable()
         st = ShelfTable()
         st.drop()
@@ -28,6 +31,9 @@ class Main:
         return
 
     def db_insert_somethings(self):
+        """
+        заполнение некими данными
+        """
         rt = RoomTable()
         st = ShelfTable()
         rt.insert_one(['Room1',50,50,20,60,18,32])
@@ -43,6 +49,9 @@ class Main:
         st.insert_one([4,5,5,500,500,500,40,40])
 
     def db_drop(self):
+        """
+        drop структуры
+        """
         rt = RoomTable()
         st = ShelfTable()
         st.drop()
@@ -60,9 +69,15 @@ class Main:
         return
 
     def read_next_step(self):
+        """
+        отобразить приглашение ввода
+        """
         return input("=> ").strip()
 
     def after_main_menu(self, next_step):
+        """
+        переход из главного меню
+        """
         if next_step == "2":
             self.db_drop()
             self.db_init()
@@ -76,6 +91,9 @@ class Main:
         else:
             return next_step
     def after_show_people(self, next_step):
+        """
+        меню комнат, обработка перехода
+        """
 
         while True:
             if next_step == "4":
@@ -105,6 +123,9 @@ class Main:
             else:
                 return next_step
     def display_shelves_menu(self):
+         """
+         Меню полки + обработчик перехода
+         """
         menu = """Дальнейшие операции:
         0 - возврат в главное меню;
         3 - добавление новой полки к комнате;

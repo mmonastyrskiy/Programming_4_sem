@@ -3,8 +3,14 @@ from room_table import RoomTable
 
 class ShelfTable(DbTable):
     def table_name(self)->str:
+        """
+        Возвращает строку префикс + полка
+        """
         return self.dbconn.prefix + "Shelf"
     def columns(self)->dict:
+        """
+        возвращает колонки + локальные ограничения целостности
+        """
         return {
         "shelf_id":["serial","PRIMARY KEY"],
         "room_id":["integer",'REFERENCES "C21-703-7".Room ON DELETE CASCADE'],
@@ -18,6 +24,9 @@ class ShelfTable(DbTable):
         }
 
     def table_constraints(self)->list:
+        """
+        Возвращает общие ограничения целостности
+        """
         return[
         "CONSTRAINT positive_size_slot_w_shelf CHECK(slot_w >0)",
         "CONSTRAINT positive_size_slot_h_shelf CHECK(slot_h >0)",
@@ -27,9 +36,15 @@ class ShelfTable(DbTable):
         "CONSTRAINT wight_left_le_weight CHECK(weight_left <= max_weight)"
         ]
     def primary_key(self)->list:
+        """
+        Возвращает список ключевых полей
+        """
         return ['shelf_id']
         
     def all_by_room_id(self, room_id:int):
+        """
+        Возвращает список полок по айди комнаты
+        """
         sql = "SELECT * FROM " + self.table_name()
         sql += " WHERE room_id = (%s)"
         sql += " ORDER BY "
@@ -39,6 +54,9 @@ class ShelfTable(DbTable):
         return cur.fetchall()
 
     def delete_shelf(self):
+        """
+        Удаление полки
+        """
         try:
             id_ = int(input("Введите номер полки, которую хотите удалить: ").strip())
         except ValueError as e:
@@ -53,6 +71,9 @@ class ShelfTable(DbTable):
 
 
     def __call_creation_wizard(self)->list:
+        """
+        Мастер создания полок
+        """
         try:
             rid = int(input("В какую комнату добавить новую полку?: "))
             if rid not in self.create_list_of_ids():
@@ -92,6 +113,9 @@ class ShelfTable(DbTable):
 
 
     def show_shelves(self)->None:
+        """
+        отобразить полки
+        """
         menu = """ Просмотр списка полок
 №\tКомната\tмакс мест\tоставшиеся места\tгабариты места\tвес макс\t вес оставшийся"""
         print(menu)
@@ -102,6 +126,9 @@ class ShelfTable(DbTable):
 
 
     def add_shelf_attached_to_room(self)-> None:
+        """
+        обработчик создания полки
+        """
         data = self.__call_creation_wizard()
         if data:
             self.insert_one(data)
@@ -112,6 +139,9 @@ class ShelfTable(DbTable):
 
 
     def del_shelf_by_room(self,room_id:int):
+        """
+        удаление полки
+        """
         lst = self.all_by_room_id(room_id)
         for i in lst:
             print(str(i[0]) + "\t" + str(i[1]) + "\t" + str(i[2]))
@@ -123,6 +153,9 @@ class ShelfTable(DbTable):
 
 
     def edit_check(self,id_:int, col_2edit: int, new_data:str)-> bool:
+        """
+        проверка выполнения ограничений целостности при редактировании полки
+        """
         elif (col_2edit == 0):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
             sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
@@ -209,6 +242,9 @@ class ShelfTable(DbTable):
 
 
     def edit_shelf(self):
+        """
+        редактор полок
+        """
         self.show_shelves()
         try:
             inp = int(input("Выберите полку которую хотите изменить: "))
