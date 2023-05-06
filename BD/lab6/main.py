@@ -82,10 +82,14 @@ class Main:
                 RT = RoomTable()
                 RT.delete_room()
                 return "1"
-            elif next_step == "6" or next_step == "7":
+            elif next_step == "7":
                 print("Пока не реализовано!")
+            elif next_step == '6':
+                RT = RoomTable()
+                RT.edit_room()
                 next_step = "5"
-            elif next_step = "3":
+            elif next_step == "3":
+                RT = RoomTable()
                 RT.add_rooms()
             elif next_step == "5":
                 RT = RoomTable()
