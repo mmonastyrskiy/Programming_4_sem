@@ -153,6 +153,7 @@ class Main:
             rid = int(input("выберите комнату для просмотра полок: "))
             data = ST.all_by_room_id(rid)
             print(data)
+            return
         elif user_chose == "6":
             ST.edit_shelf()
             return
