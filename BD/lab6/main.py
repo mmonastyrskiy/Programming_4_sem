@@ -145,6 +145,7 @@ class Main:
             return
         elif user_chose == '4':
             ST.delete_shelf()
+            ST.show_shelves()
             return
         elif user_chose == "5":
             RT = RoomTable()
