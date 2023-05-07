@@ -90,6 +90,8 @@ class RoomTable(DbTable):
         name = input(Fore.YELLOW+ "Введите название комнаты: " + Style.RESET_ALL)
         try:
             space = float(input(Fore.YELLOW+ "Введите объем комнаты: " + Style.RESET_ALL))
+            if space < 0:
+                raise ValueError
         except ValueError as e:
             print(Fore.RED+"Введено неверное число" + Style.RESET_ALL)
             self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
