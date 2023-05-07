@@ -8,7 +8,9 @@ from dbtable import DbTable
 from room_table import RoomTable
 from shelf_table import ShelfTable
 import psycopg2.errors
-
+import colorama
+from colorama import Fore, Back, Style
+colorama.init()
 
 class Main:
 
@@ -60,12 +62,12 @@ class Main:
         
 
     def show_main_menu(self):
-        menu = """Добро пожаловать! 
-Основное меню (выберите цифру в соответствии с необходимым действием): 
-    1 - взаимодействовать с комнатами;
-    2 - сброс и инициализация таблиц;
-    3 - взаимодействовать с полками
-    9 - выход."""
+        menu = Fore.YELLOW + """Добро пожаловать! 
+Основное меню (выберите цифру в соответствии с необходимым действием): """ + Style.RESET_ALL
+    Fore.GREEN + str(1) + Fore.RESET_ALL + " - взаимодействовать с комнатами;"
+    Fore.GREEN + str(2) + Fore.RESET_ALL + " - сброс и инициализация таблиц;"
+    Fore.GREEN + str(3) + Fore.RESET_ALL + " - взаимодействовать с полками"
+    Fore.GREEN + str(9) + Fore.RESET_ALL + " - выход."
         print(menu)
         return
 
@@ -73,7 +75,7 @@ class Main:
         """
         отобразить приглашение ввода
         """
-        return input("=> ").strip()
+        return input(Fore.YELLOW +"=> " + Style.RESET_ALL).strip()
 
     def after_main_menu(self, next_step):
         """
@@ -83,10 +85,10 @@ class Main:
             self.db_drop()
             self.db_init()
             self.db_insert_somethings()
-            print("Таблицы созданы заново!")
+            print(Fore.GREEN + "Таблицы созданы заново!" Style.RESET_ALL)
             return "0"
         elif next_step != "1" and next_step != "9" and next_step != "3":
-            print("Выбрано неверное число! Повторите ввод!")
+            print(Fore.RED + "Выбрано неверное число! Повторите ввод!" + Style.RESET_ALL)
 
             return "0"
         else:
@@ -115,12 +117,12 @@ class Main:
                 ST = ShelfTable()
                 RT = RoomTable()
                 RT.show_rooms()
-                rid = int(input("выберите комнату для просмотра полок: "))
+                rid = int(input(Fore.YELLOW +"выберите комнату для просмотра полок: " + Style.RESET_ALL))
                 data = ST.all_by_room_id(rid)
                 print(data)
                 next_step = "0"
             elif next_step != "0" and next_step != "9" and next_step != "3":
-                print("Выбрано неверное число! Повторите ввод!")
+                print(Fore.RED + "Выбрано неверное число! Повторите ввод!" + Style.RESET_ALL)
                 return "1"
             else:
                 return next_step
@@ -128,16 +130,16 @@ class Main:
         """
          Меню полки + обработчик перехода
          """
-        menu = """Дальнейшие операции:
-        0 - возврат в главное меню;
-        3 - добавление новой полки к комнате;
-        4 - удаление полки;
-        5 - просмотр стеллажей комнаты;
-        6 - редактирование полки
-        9 - выход."""
+        menu = Fore.YELLOW +"""Дальнейшие операции:""" +Style.RESET_ALL
+        Fore.GREEN + str(0) + Style.RESET_ALL + " - возврат в главное меню;"
+        Fore.GREEN + str(3) + Style.RESET_ALL + " - добавление новой полки к комнате;"
+        Fore.GREEN + str(4) + Style.RESET_ALL + " - удаление полки;"
+        Fore.GREEN + str(5) + Style.RESET_ALL + " - просмотр стеллажей комнаты;"
+        Fore.GREEN + str(6) + Style.RESET_ALL + " - редактирование полки"
+        Fore.GREEN + str(9) + Style.RESET_ALL + " - выход."""
         print(menu)
         ST = ShelfTable()
-        user_chose = input("выберите нужный пункт меню: ")
+        user_chose = input(Fore.YELLOW +"выберите нужный пункт меню: " + Style.RESET_ALL)
         if user_chose == "0":
             return
         elif user_chose == "3":
@@ -150,7 +152,7 @@ class Main:
         elif user_chose == "5":
             RT = RoomTable()
             RT.show_rooms()
-            rid = int(input("выберите комнату для просмотра полок: "))
+            rid = int(input(Fore.YELLOW +"выберите комнату для просмотра полок: " + Style.RESET_ALL))
             data = ST.all_by_room_id(rid)
             print(data)
             return
@@ -175,7 +177,7 @@ class Main:
             elif current_menu == "3":
                 self.display_shelves_menu()
                 current_menu = "0"
-        print("До свидания!")    
+        print(Fore.CYAN + "До свидания!"+Style.RESET_ALL)    
         return
 
 
@@ -187,5 +189,5 @@ m = Main()
 try:
     m.main_cycle()
 except psycopg2.errors.UndefinedTable as UndefinedTable:
-    print("Кажется заданная таблица не найдена, проверьте структуру базы данных или выполните действие 2 из главного меню, чтобы создать Таблицы\n"
+    print(Fore.RED +"Кажется заданная таблица не найдена, проверьте структуру базы данных или выполните действие 2 из главного меню, чтобы создать Таблицы\n" + Style.RESET_ALL
         , UndefinedTable)

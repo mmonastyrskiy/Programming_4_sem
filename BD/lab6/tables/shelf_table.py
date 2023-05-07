@@ -141,9 +141,9 @@ class ShelfTable(DbTable):
         data = self.__call_creation_wizard()
         if data:
             self.insert_one(data)
-            print("Полка создана")
+            print(Fore.GREEN + "Полка создана" + Style.RESET_ALL)
             return
-        print("Полка не создана, ошибка")
+        print(Fore.RED + "Полка не создана, ошибка" + Style.RESET_ALL)
         return
 
 
@@ -207,7 +207,7 @@ class ShelfTable(DbTable):
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
-            cur.execute(sql, [new_data, (str(id_),)])
+            cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 4):
@@ -219,7 +219,7 @@ class ShelfTable(DbTable):
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
-            cur.execute(sql, [new_data, (str(id_),)])
+            cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 5):
@@ -231,7 +231,7 @@ class ShelfTable(DbTable):
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
-            cur.execute(sql, [new_data, (str(id_),)])
+            cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 6):
@@ -249,7 +249,7 @@ class ShelfTable(DbTable):
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
-            cur.execute(sql, [new_data, (str(id_),)])
+            cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
 
@@ -262,11 +262,11 @@ class ShelfTable(DbTable):
         """
         self.show_shelves()
         try:
-            inp = int(input("Выберите полку которую хотите изменить: "))
+            inp = int(input(Fore.YELLOW + "Выберите полку которую хотите изменить: " + Style.RESET_ALL))
             if inp not in self.create_list_of_ids():
                 raise ValueError
         except ValueError as e:
-            print("Введите правильное число")
+            print(Fore.RED+ "Введите правильное число" + Style.RESET_ALL)
             self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
 
         sql = f"SELECT * FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
@@ -278,17 +278,17 @@ class ShelfTable(DbTable):
         for col in enumerate(data):
             print(col[0],col[1], sep = "\t")
         try:
-            col_2edit = int(input("Введите номер поля, который хотите изменить: "))
+            col_2edit = int(input(Fore.YELLOW + "Введите номер поля, который хотите изменить: " + Style.RESET_ALL))
             if not(0 <= col_2edit < len(data)):
                 raise ValueError
         except ValueError as e:
             self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            print("Введено неверное число")
-        new_data = input("Введите новое значение поля: ")
+            print(Fore.RED + "Введено неверное число"+Style.RESET_ALL)
+        new_data = input(Fore.YELLOW+"Введите новое значение поля: "+Style.RESET_ALL)
         if self.edit_check(inp,col_2edit,new_data):
-            print("Изменения применены")
+            print(Fore.GREEN+"Изменения применены"+Style.RESET_ALL)
             return
-        print("Во внесении изменений отказно, неверное новое значение")
+        print(Fore.RED+"Во внесении изменений отказно, неверное новое значение"Style.RESET_ALL)
         return
 
 

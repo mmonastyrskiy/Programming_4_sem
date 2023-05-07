@@ -139,7 +139,7 @@ class RoomTable(DbTable):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
             sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
-            cur.execute(sql, [new_data, (str(id_),)])
+            cur.execute(sql, [new_data, str(id_,)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 1):
@@ -152,13 +152,13 @@ class RoomTable(DbTable):
                 cur.execute(sql, (str(id_),))
                 recived = list(cur.fetchone())[0]
 
-                if not(float(new_data) >= recived):
+                if not(float(new_data) >= recived) or new_data <= 0:
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
 
                 return False
-            cur.execute(sql, [new_data, (str(id_),)])
+            cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 3):
@@ -172,7 +172,7 @@ class RoomTable(DbTable):
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
-            cur.execute(sql, [new_data, (str(id_),)])
+            cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 4):
@@ -186,7 +186,7 @@ class RoomTable(DbTable):
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
-            cur.execute(sql, [new_data, (str(id_),)])
+            cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 5):
@@ -200,7 +200,7 @@ class RoomTable(DbTable):
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
-            cur.execute(sql, [new_data, (str(id_),)])
+            cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 6):
@@ -214,7 +214,7 @@ class RoomTable(DbTable):
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
-            cur.execute(sql, [new_data, (str(id_),)])
+            cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
         else:

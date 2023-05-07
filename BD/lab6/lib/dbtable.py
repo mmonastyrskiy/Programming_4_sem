@@ -84,7 +84,7 @@ class DbTable:
         sql = "INSERT INTO " + self.table_name() + "("
         sql += ",".join(self.column_names_without_id()) + ") VALUES("
         sql +=  "(%s)," * (len(vals)-1) + "(%s)" + ")"
-        print(sql)
+        #print(sql)
         cur = self.dbconn.conn.cursor()
         #print(sql)
         cur.execute(sql, vals)
