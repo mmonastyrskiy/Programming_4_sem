@@ -1,5 +1,8 @@
 from dbtable import *
 from room_table import RoomTable
+import colorama
+from colorama import Fore, Back, Style
+colorama.init()
 
 class ShelfTable(DbTable):
     def table_name(self)->str:
@@ -58,13 +61,14 @@ class ShelfTable(DbTable):
         Удаление полки
         """
         try:
-            id_ = int(input("Введите номер полки, которую хотите удалить: ").strip())
+            id_ = int(input(Fore.YELLOW+"Введите номер полки, которую хотите удалить: "+Style.RESET_ALL).strip())
         except ValueError as e:
-            print("неверно! Введите число!")
+            print(Fore.RED+"неверно! Введите число!"+Style.RESET_ALL)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             return
         sql = "DELETE FROM " + self.table_name()
         sql += f" WHERE {self.primary_key()[0]} = (%s)"
-        print(sql)
+        #print(sql)
         cur = self.dbconn.conn.cursor()
         cur.execute(sql,(str(id_),))
         self.dbconn.conn.commit()
@@ -75,36 +79,41 @@ class ShelfTable(DbTable):
         Мастер создания полок
         """
         try:
-            rid = int(input("В какую комнату добавить новую полку?: "))
+            rid = int(input(Fore.YELLOW+"В какую комнату добавить новую полку?: "+Style.RESET_ALL))
             if rid not in self.create_list_of_ids():
                 raise ValueError
         except ValueError as e:
-            print("ошибка, введите верное число")
+            print(Fore.RED+"ошибка, введите верное число"+Style.RESET_ALL)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             return []
 
         try:
-            max_spaces = int(input("Введите количество мест на полке: "))
+            max_spaces = int(input(Fore.YELLOW+"Введите количество мест на полке: "+Style.RESET_ALL))
         except ValueError as e:
-            print("Введите число, то что ты ввел, редиска, не число")
+            print(Fore.RED+"Введите число, то что ты ввел, редиска, не число"+Style.RESET_ALL)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             return []
         if max_spaces <= 0:
-            print("Недопустимое количество мест")
+            print(Fore.RED+"Недопустимое количество мест")
+            self.dbconn.logger.warn(Fore.GREEN+str("Недопустимое количество мест")+Style.RESET_ALL)
             return []
         spaces_left = max_spaces
         try:
-            l,w,h = map(float, input("Введите габариты места на полке, разделяя их пробелом: ").split())
+            l,w,h = map(float, input(Fore.YELLOW+"Введите габариты места на полке, разделяя их пробелом: "+Style.RESET_ALL).split())
         except ValueError as e:
-            print("ты в курсе что такое три числа?")
+            print(Fore.RED+"ты в курсе что такое три числа?"+Style.RESET_ALL)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             return []
         if(l <= 0 or w <= 0 or h <= 0):
-            print("Недопустимый габарит")
+            print(Fore.RED+"Недопустимый габарит")
             return []
         try:
-            max_weight = float(input("Введите максимальный нагрузочный вес полки: "))
+            max_weight = float(input(Fore.YELLOW+"Введите максимальный нагрузочный вес полки: "+Style.RESET_ALL))
         except ValueError as e:
-            print("Вес - число, а не то что ты ввел")
+            print(Fore.RED+"Вес - число, а не то что ты ввел"+Style.RESET_ALL)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
         if max_weight <= 0:
-            print("Недопустимый вес")
+            print(Fore.RED+"Недопустимый вес"+Style.RESET_ALL)
             return []
         weight_left = max_weight
         return [rid,max_spaces,spaces_left,w,h,l,max_weight,weight_left]
@@ -116,8 +125,8 @@ class ShelfTable(DbTable):
         """
         отобразить полки
         """
-        menu = """ Просмотр списка полок
-№\tКомната\tмакс мест\tоставшиеся места\tгабариты места\tвес макс\t вес оставшийся"""
+        menu = Fore.YELLOW+""" Просмотр списка полок
+№\tКомната\tмакс мест\tоставшиеся места\tгабариты места\tвес макс\t вес оставшийся""" + Style.RESET_ALL
         print(menu)
         lst = self.all()
         for i in lst:
@@ -166,6 +175,7 @@ class ShelfTable(DbTable):
                 if(int(new_data) not in ids):
                     raise ValueError
             except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
@@ -183,6 +193,7 @@ class ShelfTable(DbTable):
                 if not(float(new_data) >= recived):
                     raise ValueError
             except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
@@ -194,6 +205,7 @@ class ShelfTable(DbTable):
             try:
                 int(new_data)
             except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
@@ -205,6 +217,7 @@ class ShelfTable(DbTable):
             try:
                 int(new_data)
             except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
@@ -216,6 +229,7 @@ class ShelfTable(DbTable):
             try:
                 int(new_data)
             except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
@@ -233,6 +247,7 @@ class ShelfTable(DbTable):
                 if not(float(new_data) >= recived):
                     raise ValueError
             except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
@@ -252,6 +267,8 @@ class ShelfTable(DbTable):
                 raise ValueError
         except ValueError as e:
             print("Введите правильное число")
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
+
         sql = f"SELECT * FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
         cur = self.dbconn.conn.cursor()
         cur.execute(sql, (str(inp),))
@@ -265,9 +282,10 @@ class ShelfTable(DbTable):
             if not(0 <= col_2edit < len(data)):
                 raise ValueError
         except ValueError as e:
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             print("Введено неверное число")
         new_data = input("Введите новое значение поля: ")
-        if edit_check(inp,col_2edit,new_data):
+        if self.edit_check(inp,col_2edit,new_data):
             print("Изменения применены")
             return
         print("Во внесении изменений отказно, неверное новое значение")

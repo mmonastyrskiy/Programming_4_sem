@@ -137,7 +137,7 @@ class RoomTable(DbTable):
         """
         if(col_2edit == 0):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
