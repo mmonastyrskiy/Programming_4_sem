@@ -185,9 +185,9 @@ class ShelfTable(DbTable):
             sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
-                sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
+                sql_ = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
                 cur = self.dbconn.conn.cursor()
-                cur.execute(sql, (str(id_),))
+                cur.execute(sql_, tuple(str(id_),))
                 recived = list(cur.fetchone())[0]
 
                 if not(float(new_data) >= recived):
@@ -195,7 +195,7 @@ class ShelfTable(DbTable):
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
-            cur.execute(sql, [new_data, (str(id_),)])
+            cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 3):
@@ -242,9 +242,9 @@ class ShelfTable(DbTable):
             sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
-                sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
+                sql_ = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
                 cur = self.dbconn.conn.cursor()
-                cur.execute(sql, (str(id_),))
+                cur.execute(sql_, (str(id_),))
                 recived = list(cur.fetchone())[0]
 
                 if not(float(new_data) >= recived):
