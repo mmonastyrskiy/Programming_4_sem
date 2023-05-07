@@ -196,6 +196,7 @@ except psycopg2.errors.UndefinedTable as UndefinedTable:
         , UndefinedTable)
 except psycopg2.errors.CheckViolation:
     print(Fore.RED+"Нарушение ограничений целостности" + Style.RESET_ALL)
+    m.main_cycle()
 except Exception as e:
     print(e)
     try:

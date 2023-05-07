@@ -166,8 +166,8 @@ class ShelfTable(DbTable):
         проверка выполнения ограничений целостности при редактировании полки
         """
         if (col_2edit == 0):
-            sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit][0]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
                 RT = RoomTable()
@@ -203,7 +203,8 @@ class ShelfTable(DbTable):
             sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
-                int(new_data)
+                if (int(new_data) <= 0):
+                    raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
@@ -215,7 +216,8 @@ class ShelfTable(DbTable):
             sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
-                int(new_data)
+                if (int(new_data) <= 0):
+                    raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
@@ -227,7 +229,8 @@ class ShelfTable(DbTable):
             sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
-                int(new_data)
+                if (int(new_data) <= 0):
+                    raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
