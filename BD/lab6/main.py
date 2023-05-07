@@ -129,14 +129,18 @@ class Main:
         """
          Меню полки + обработчик перехода
          """
-        menu = Fore.YELLOW +"""Дальнейшие операции:""" +Style.RESET_ALL
-        Fore.GREEN + str(0) + Style.RESET_ALL + " - возврат в главное меню;"
-        Fore.GREEN + str(3) + Style.RESET_ALL + " - добавление новой полки к комнате;"
-        Fore.GREEN + str(4) + Style.RESET_ALL + " - удаление полки;"
-        Fore.GREEN + str(5) + Style.RESET_ALL + " - просмотр стеллажей комнаты;"
-        Fore.GREEN + str(6) + Style.RESET_ALL + " - редактирование полки"
-        Fore.GREEN + str(9) + Style.RESET_ALL + " - выход."""
+
+        menu = Fore.YELLOW +"""Дальнейшие операции:
+    """+Style.RESET_ALL +Fore.GREEN + str(0) + Style.RESET_ALL+"""  - возврта в главное меню
+    """+Fore.GREEN + str(3) + Style.RESET_ALL+"""  - добавление новой полки к комнате;
+    """+Fore.GREEN + str(4) + Style.RESET_ALL+"""  - удаление полки;
+    """+Fore.GREEN + str(5) + Style.RESET_ALL+"""  - просмотр стеллажей комнаты;
+    """+Fore.GREEN + str(6) + Style.RESET_ALL+"""  - редактирование полки
+    """+Fore.GREEN + str(9) + Style.RESET_ALL + "  - выход."""
+
         print(menu)
+
+
         ST = ShelfTable()
         user_chose = input(Fore.YELLOW +"выберите нужный пункт меню: " + Style.RESET_ALL)
         if user_chose == "0":
@@ -190,6 +194,8 @@ try:
 except psycopg2.errors.UndefinedTable as UndefinedTable:
     print(Fore.RED +"Кажется заданная таблица не найдена, проверьте структуру базы данных или выполните действие 2 из главного меню, чтобы создать Таблицы\n" + Style.RESET_ALL
         , UndefinedTable)
+except psycopg2.errors.CheckViolation:
+    print(Fore.RED+"Нарушение ограничений целостности" + Style.RESET_ALL)
 except Exception as e:
     print(e)
     try:
