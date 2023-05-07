@@ -155,7 +155,7 @@ class RoomTable(DbTable):
                 cur.execute(sql, (str(id_),))
                 recived = list(cur.fetchone())[0]
 
-                if not(float(new_data) >= recived) or new_data <= 0:
+                if (not(float(new_data) >= recived) or (new_data <= 0)):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)

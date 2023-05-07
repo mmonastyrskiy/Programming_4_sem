@@ -192,5 +192,8 @@ except psycopg2.errors.UndefinedTable as UndefinedTable:
         , UndefinedTable)
 except Exception as e:
     print(e)
-    connection.logger.warn(e)
+    try:
+        connection.logger.warn(e)
+    except Exception as e:
+        print(Fore.RED+"лог файл недоступен"+Style.RESET_ALL)
     m.main_cycle()
