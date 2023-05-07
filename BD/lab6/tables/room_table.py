@@ -35,7 +35,10 @@ class RoomTable(DbTable):
 	   "CONSTRAINT positive_volume_room CHECK(space >0)",
 	   "CONSTRAINT volume_left_le_volume CHECK(space_left <= space)",
 	   "CONSTRAINT hu_max_in_interval CHECK (max_humidity <= 100 and max_humidity >= 0)",
-	   "CONSTRAINT hu_min_in_interval CHECK (min_humidity <= 100 and min_humidity >= 0)"
+	   "CONSTRAINT hu_min_in_interval CHECK (min_humidity <= 100 and min_humidity >= 0)",
+       "CONSTRAINT temp_check CHECK (min_temp <= max_temp)",
+       "CONSTRAINT hu_check CHECK (min_humidity <= max_humidity)"
+
        ])
 
 

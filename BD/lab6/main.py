@@ -190,3 +190,7 @@ try:
 except psycopg2.errors.UndefinedTable as UndefinedTable:
     print(Fore.RED +"Кажется заданная таблица не найдена, проверьте структуру базы данных или выполните действие 2 из главного меню, чтобы создать Таблицы\n" + Style.RESET_ALL
         , UndefinedTable)
+except Exception as e:
+    print(e)
+    connection.logger.warn(e)
+    m.main_cycle()
