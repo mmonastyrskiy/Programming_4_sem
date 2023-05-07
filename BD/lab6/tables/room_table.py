@@ -48,7 +48,7 @@ class RoomTable(DbTable):
             id_ = int(input(Fore.YELLOW +"Введите номер комнаты, которую хотите удалить: " + Style.RESET_ALL).strip())
         except ValueError as e:
             print(Fore.RED +"Введите номер по списку, введеное значение - не число" + Style.RESET_ALL)
-            self.dbconn.logger.warn(e)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             return
         sql = "DELETE FROM " + self.table_name()
         sql += f" WHERE id = (%s)"
@@ -89,7 +89,7 @@ class RoomTable(DbTable):
             space = float(input(Fore.YELLOW+ "Введите объем комнаты: " + Style.RESET_ALL))
         except ValueError as e:
             print(Fore.RED+"Введено неверное число" + Style.RESET_ALL)
-            self.dbconn.logger.warn(e)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             return []
 
         try:
@@ -98,8 +98,8 @@ class RoomTable(DbTable):
             if not((0<= minh <= 100) and (0 <= maxh <= 100) and minh <= maxh):
                 raise ValueError
         except ValueError as e:
-            print(Fore.RED"Одна или обе из влажностей введена(ы) неверно"+Style.RESET_ALL)
-            self.dbconn.logger.warn(e)
+            print(Fore.RED+ "Одна или обе из влажностей введена(ы) неверно"+Style.RESET_ALL)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             return []
 
         try:
@@ -108,8 +108,8 @@ class RoomTable(DbTable):
             if not((0<= mint <= 100) and (0 <= maxt <= 100) and mint <= maxt):
                 raise ValueError
         except ValueError as e:
-            print(Fore.RED"Одна или обе из температур введена(ы) неверно"+Style.RESET_ALL)
-            self.dbconn.logger.warn(e)
+            print(Fore.RED + "Одна или обе из температур введена(ы) неверно"+Style.RESET_ALL)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             return []
         return [name,space,space,minh,maxh,mint,maxt]
         
@@ -124,7 +124,7 @@ class RoomTable(DbTable):
         data = self.__call_creation_wizard()
         if data:
             self.insert_one(data)
-            print(Fore.GREEN"комната создана" + Style.RESET_ALL)
+            print(Fore.GREEN+"комната создана" + Style.RESET_ALL)
             return
         print(Fore.RED +"комната не создана, ошибка" + Style.RESET_ALL)
         return
@@ -139,7 +139,6 @@ class RoomTable(DbTable):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
             sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
             cur = self.dbconn.conn.cursor()
-            #print(sql)
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
@@ -156,6 +155,8 @@ class RoomTable(DbTable):
                 if not(float(new_data) >= recived):
                     raise ValueError
             except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
+
                 return False
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
@@ -169,6 +170,7 @@ class RoomTable(DbTable):
                 if not ((0 <= d <= 100)) and (d > self.column_names_without_id()[col_2edit+1]):
                     raise ValueError
             except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
@@ -182,6 +184,7 @@ class RoomTable(DbTable):
                 if not ((0 <= d <= 100)) and (d < self.column_names_without_id()[col_2edit-1]):
                     raise ValueError
             except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
@@ -195,6 +198,7 @@ class RoomTable(DbTable):
                 if not ((0 <= d <= 100)) and (d > self.column_names_without_id()[col_2edit+1]):
                     raise ValueError
             except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
@@ -208,12 +212,13 @@ class RoomTable(DbTable):
                 if not ((0 <= d <= 100)) and (d < self.column_names_without_id()[col_2edit-1]):
                     raise ValueError
             except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
                 return False
             cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
         else:
-            print("Ошибка, затронут неверный столбец, возможно неизменяемый")
+            print(Fore.RED+"Ошибка, затронут неверный столбец, возможно неизменяемый"+Style.RESET_ALL)
             return False
 
 
@@ -223,11 +228,12 @@ class RoomTable(DbTable):
         """
         self.show_rooms()
         try:
-            inp = int(input("Выберите комнату которую хотите изменить: "))
+            inp = int(input(Fore.YELLOW+"Выберите комнату которую хотите изменить: "+Style.RESET_ALL))
             if inp not in self.create_list_of_ids():
                 raise ValueError
         except ValueError as e:
-            print("Введите правильное число")
+            print(Fore.RED+"Введите правильное число"+Style.RESET_ALL)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             return
         sql = f"SELECT * FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
         cur = self.dbconn.conn.cursor()
@@ -238,17 +244,18 @@ class RoomTable(DbTable):
         for col in enumerate(data):
             print(col[0],col[1], sep = "\t")
         try:
-            col_2edit = int(input("Введите номер поля, который хотите изменить: "))
+            col_2edit = int(input(Fore.YELLOW+"Введите номер поля, который хотите изменить: " + Style.RESET_ALL))
             if not(0 <= col_2edit < len(data)):
                 raise ValueError
         except ValueError as e:
-            print("Введено неверное число")
+            print(Fore.RED+"Введено неверное число"+Style.RESET_ALL)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             return
-        new_data = input("Введите новое значение поля: ")
+        new_data = input(Fore.YELLOW+"Введите новое значение поля: "+Style.RESET_ALL)
         if self.edit_check(inp,col_2edit,new_data):
-            print("Изменения применены")
+            print(Fore.GREEN+"Изменения применены"+Style.RESET_ALL)
             return
-        print("Во внесении изменений отказно, неверное новое значение")
+        print(Fore.RED+"Во внесении изменений отказно, неверное новое значение"+Style.RESET_ALL)
         return
 
 
