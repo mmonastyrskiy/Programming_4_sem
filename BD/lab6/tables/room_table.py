@@ -167,7 +167,11 @@ class RoomTable(DbTable):
             cur = self.dbconn.conn.cursor()
             try:
                 d = float(new_data)
-                if not ((0 <= d <= 100)) and (d > self.column_names_without_id()[col_2edit+1]):
+                min_ = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM " + self.table_name() + f" WHERE {self.primary_key()[0]} = {str(id_)}"
+                cur.execute(min_)
+                r = float(cur.fetchone()[0])
+
+                if not ((0 <= d <= 100)) and (d > r):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
@@ -181,7 +185,11 @@ class RoomTable(DbTable):
             cur = self.dbconn.conn.cursor()
             try:
                 d = float(new_data)
-                if not ((0 <= d <= 100)) and (d < self.column_names_without_id()[col_2edit-1]):
+                min_ = f"SELECT {self.column_names_without_id()[col_2edit-1]} FROM " + self.table_name() + f" WHERE {self.primary_key()[0]} = {str(id_)}"
+                cur.execute(min_)
+                r = float(cur.fetchone()[0])
+
+                if not ((0 <= d <= 100)) and (d < r):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
@@ -195,7 +203,10 @@ class RoomTable(DbTable):
             cur = self.dbconn.conn.cursor()
             try:
                 d = float(new_data)
-                if not ((0 <= d <= 100)) and (d > self.column_names_without_id()[col_2edit+1]):
+                min_ = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM " + self.table_name() + f" WHERE {self.primary_key()[0]} = {str(id_)}"
+                cur.execute(min_)
+                r = float(cur.fetchone()[0])
+                if not ((0 <= d <= 100)) and (d > r):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
@@ -209,7 +220,10 @@ class RoomTable(DbTable):
             cur = self.dbconn.conn.cursor()
             try:
                 d = float(new_data)
-                if not ((0 <= d <= 100)) and (d < self.column_names_without_id()[col_2edit-1]):
+                min_ = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM " + self.table_name() + f" WHERE {self.primary_key()[0]} = {str(id_)}"
+                cur.execute(min_)
+                r = float(cur.fetchone()[0])
+                if not ((0 <= d <= 100)) and (d < r):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)

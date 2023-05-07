@@ -288,7 +288,7 @@ class ShelfTable(DbTable):
         if self.edit_check(inp,col_2edit,new_data):
             print(Fore.GREEN+"Изменения применены"+Style.RESET_ALL)
             return
-        print(Fore.RED+"Во внесении изменений отказно, неверное новое значение"Style.RESET_ALL)
+        print(Fore.RED+"Во внесении изменений отказно, неверное новое значение"+Style.RESET_ALL)
         return
 
 

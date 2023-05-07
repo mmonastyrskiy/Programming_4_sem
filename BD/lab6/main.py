@@ -62,12 +62,11 @@ class Main:
         
 
     def show_main_menu(self):
-        menu = Fore.YELLOW + """Добро пожаловать! 
-Основное меню (выберите цифру в соответствии с необходимым действием): """ + Style.RESET_ALL
-    Fore.GREEN + str(1) + Fore.RESET_ALL + " - взаимодействовать с комнатами;"
-    Fore.GREEN + str(2) + Fore.RESET_ALL + " - сброс и инициализация таблиц;"
-    Fore.GREEN + str(3) + Fore.RESET_ALL + " - взаимодействовать с полками"
-    Fore.GREEN + str(9) + Fore.RESET_ALL + " - выход."
+        menu = Fore.YELLOW +"""Дальнейшие операции:
+    """+Style.RESET_ALL +Fore.GREEN + str(1) + Style.RESET_ALL+"""  - взаимодействовать с комнатами
+    """+Fore.GREEN + str(2) + Style.RESET_ALL+"""  - Очистка и создание таблиц
+    """+Fore.GREEN + str(3) + Style.RESET_ALL+"""  - Взаимодействовать с полками
+    """+Fore.GREEN + str(9) + Style.RESET_ALL+"""  - выход."""
         print(menu)
         return
 
@@ -85,7 +84,7 @@ class Main:
             self.db_drop()
             self.db_init()
             self.db_insert_somethings()
-            print(Fore.GREEN + "Таблицы созданы заново!" Style.RESET_ALL)
+            print(Fore.GREEN + "Таблицы созданы заново!"+ Style.RESET_ALL)
             return "0"
         elif next_step != "1" and next_step != "9" and next_step != "3":
             print(Fore.RED + "Выбрано неверное число! Повторите ввод!" + Style.RESET_ALL)
