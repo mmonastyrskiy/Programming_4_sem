@@ -7,6 +7,7 @@ from dbconnection import *
 from dbtable import DbTable
 from room_table import RoomTable
 from shelf_table import ShelfTable
+import psycopg2.errors
 
 
 class Main:
@@ -105,10 +106,11 @@ class Main:
             elif next_step == '6':
                 RT = RoomTable()
                 RT.edit_room()
-                next_step = "5"
+                next_step = "0"
             elif next_step == "3":
                 RT = RoomTable()
                 RT.add_rooms()
+                next_step = "0"
             elif next_step == "5":
                 ST = ShelfTable()
                 RT = RoomTable()
@@ -180,4 +182,8 @@ class Main:
         DbTable.dbconn.test()
 
 m = Main()
-m.main_cycle()
+try:
+    m.main_cycle()
+except psycopg2.errors.UndefinedTable as UndefinedTable:
+    print("Кажется заданная таблица не найдена, проверьте структуру базы данных или выполните действие 2 из главного меню, чтобы создать Таблицы\n"
+        , UndefinedTable)

@@ -13,7 +13,7 @@ class ShelfTable(DbTable):
         """
         return {
         "shelf_id":["serial","PRIMARY KEY"],
-        "room_id":["integer",f'REFERENCES "{self.dbconn.prefix}".Room ON DELETE CASCADE'],
+        "room_id":["integer",f'REFERENCES {self.dbconn.prefix}Room ON DELETE CASCADE'],
         "max_spaces":["integer","NOT NULL"],
         "spaces_left":["integer", "NOT NULL"],
         "slot_w":["numeric(7,0)", "NOT NULL"],
@@ -157,7 +157,7 @@ class ShelfTable(DbTable):
         проверка выполнения ограничений целостности при редактировании полки
         """
         if (col_2edit == 0):
-            sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
+            sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit][0]
             sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
@@ -172,7 +172,7 @@ class ShelfTable(DbTable):
             return True
         elif (col_2edit == 1):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
                 sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
@@ -184,45 +184,45 @@ class ShelfTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 return False
-            cur.execute(sql, [new_data, str(id_)])
+            cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 3):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
                 int(new_data)
             except ValueError as e:
                 return False
-            cur.execute(sql, [new_data, str(id_)])
+            cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 4):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
                 int(new_data)
             except ValueError as e:
                 return False
-            cur.execute(sql, [new_data, str(id_)])
+            cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 5):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
                 int(new_data)
             except ValueError as e:
                 return False
-            cur.execute(sql, [new_data, str(id_)])
+            cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 6):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
                 sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
@@ -234,7 +234,7 @@ class ShelfTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 return False
-            cur.execute(sql, [new_data, str(id_)])
+            cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
 

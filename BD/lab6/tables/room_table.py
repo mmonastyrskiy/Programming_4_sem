@@ -136,7 +136,7 @@ class RoomTable(DbTable):
             sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
             cur = self.dbconn.conn.cursor()
             #print(sql)
-            cur.execute(sql, [new_data, str(id_)])
+            cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 1):
@@ -153,12 +153,12 @@ class RoomTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 return False
-            cur.execute(sql, [new_data, str(id_)])
+            cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 3):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
                 d = float(new_data)
@@ -166,12 +166,12 @@ class RoomTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 return False
-            cur.execute(sql, [new_data, str(id_)])
+            cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 4):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
                 d = float(new_data)
@@ -179,12 +179,12 @@ class RoomTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 return False
-            cur.execute(sql, [new_data, str(id_)])
+            cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 5):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
                 d = float(new_data)
@@ -192,12 +192,12 @@ class RoomTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 return False
-            cur.execute(sql, [new_data, str(id_)])
+            cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
         elif (col_2edit == 6):
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
-            sql += " = (%s) WHERE " + self.primary_key() + " = (%s)"
+            sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
                 d = float(new_data)
@@ -205,7 +205,7 @@ class RoomTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 return False
-            cur.execute(sql, [new_data, str(id_)])
+            cur.execute(sql, [new_data, (str(id_),)])
             self.dbconn.conn.commit()
             return True
         else:
@@ -224,6 +224,7 @@ class RoomTable(DbTable):
                 raise ValueError
         except ValueError as e:
             print("Введите правильное число")
+            return
         sql = f"SELECT * FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
         cur = self.dbconn.conn.cursor()
         cur.execute(sql, (str(inp),))
@@ -238,6 +239,7 @@ class RoomTable(DbTable):
                 raise ValueError
         except ValueError as e:
             print("Введено неверное число")
+            return
         new_data = input("Введите новое значение поля: ")
         if self.edit_check(inp,col_2edit,new_data):
             print("Изменения применены")
