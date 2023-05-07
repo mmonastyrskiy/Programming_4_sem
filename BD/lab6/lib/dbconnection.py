@@ -7,12 +7,13 @@ import psycopg2
 from psycopg2.extras import LoggingConnection
 LOG_FILE ="log" + sep + str(date.today()) + ".log"
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 FH = logging.FileHandler(LOG_FILE)
 basic_formater = logging.Formatter('%(asctime)s : [%(levelname)s] : %(message)s')
 FH.setFormatter(basic_formater)
 logger.addHandler(FH)
+logger.propagate = False
 
 class DbConnection:
 

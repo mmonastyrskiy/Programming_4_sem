@@ -16,14 +16,14 @@ class Main:
     connection = DbConnection(config)
 
     def __init__(self):
-        DbTable.dbconn = self.connection
+        self.conn = DbTable.dbconn = self.connection
         return
 
     def db_init(self):
         """
         инициализация таблиц
         """
-        rt = RoomTable()
+        rt = RoomTable(self.conn)
         st = ShelfTable()
         st.drop()
         rt.drop()

@@ -1,5 +1,7 @@
 from dbtable import *
-
+import colorama
+from colorama import Fore, Back, Style
+colorama.init()
 class RoomTable(DbTable):
     def table_name(self) -> str:
         """
@@ -43,14 +45,13 @@ class RoomTable(DbTable):
         Отрабатывает удаление комнаты
         """
         try:
-            id_ = int(input("Введите номер комнаты, которую хотите удалить: ").strip())
-            print(id_)
+            id_ = int(input(Fore.YELLOW +"Введите номер комнаты, которую хотите удалить: " + Style.RESET_ALL).strip())
         except ValueError as e:
-            print("Введите номер по списку, введеное значение - не число")
+            print(Fore.RED +"Введите номер по списку, введеное значение - не число" + Style.RESET_ALL)
+            self.dbconn.logger.warn(e)
             return
         sql = "DELETE FROM " + self.table_name()
         sql += f" WHERE id = (%s)"
-        #print(sql)
         cur = self.dbconn.conn.cursor()
         id_ = str(id_)
         cur.execute(sql, (id_,))
@@ -64,17 +65,17 @@ class RoomTable(DbTable):
         """
         menu = """Просмотр списка комнат!
 №\tИмя\tОбъем\t"""
-        print(menu)
+        print(Fore.YELLOW + menu + Style.RESET_ALL)
         lst = self.all()
         for i in lst:
-            print(str(i[0]) + "\t" + str(i[1]) + "\t" + str(i[2]))
-        menu = """Дальнейшие операции:
-    0 - возврат в главное меню;
-    3 - добавление новой комнаты;
-    4 - удаление комнаты;
-    5 - просмотр стеллажей комнаты;
-    6 - редактировать комнату
-    9 - выход."""
+            print(Fore.GREEN+str(i[0])+Style.RESET_ALL + "\t" + str(i[1]) + "\t" + str(i[2]))
+        menu = Fore.YELLOW +"""Дальнейшие операции:
+    """+Style.RESET_ALL +Fore.GREEN + str(0) + Style.RESET_ALL+"""  - возврат в главное меню;
+    """+Fore.GREEN + str(3) + Style.RESET_ALL+"""  - добавление новой комнаты;
+    """+Fore.GREEN + str(4) + Style.RESET_ALL+"""  - удаление комнаты;
+    """+Fore.GREEN + str(5) + Style.RESET_ALL+"""  - просмотр стеллажей комнаты;
+    """+Fore.GREEN + str(6) + Style.RESET_ALL+"""  - редактировать комнату
+    """+Fore.GREEN + str(9) + Style.RESET_ALL+"""  - выход."""
         print(menu)
         return
 
@@ -83,29 +84,32 @@ class RoomTable(DbTable):
         """
         Запуск мастера создания комнаты
         """
-        name = input("Введите название комнаты: ")
+        name = input(Fore.YELLOW+ "Введите название комнаты: " + Style.RESET_ALL)
         try:
-            space = float(input("Введите объем комнаты: "))
+            space = float(input(Fore.YELLOW+ "Введите объем комнаты: " + Style.RESET_ALL))
         except ValueError as e:
-            print("Введено неверное число")
+            print(Fore.RED+"Введено неверное число" + Style.RESET_ALL)
+            self.dbconn.logger.warn(e)
             return []
 
         try:
-            minh = float(input("Введите минимальную влажность"))
-            maxh = float(input("Введите максимальную влажность"))
+            minh = float(input(Fore.YELLOW+ "Введите минимальную влажность" + Style.RESET_ALL))
+            maxh = float(input(Fore.YELLOW+ "Введите максимальную влажность" + Style.RESET_ALL))
             if not((0<= minh <= 100) and (0 <= maxh <= 100) and minh <= maxh):
                 raise ValueError
         except ValueError as e:
-            print("Одна или обе из влажностей введена(ы) неверно")
+            print(Fore.RED"Одна или обе из влажностей введена(ы) неверно"+Style.RESET_ALL)
+            self.dbconn.logger.warn(e)
             return []
 
         try:
-            mint = float(input("Введите минимальную температуру"))
-            maxt = float(input("Введите максимальную температуру"))
+            mint = float(input(Fore.YELLOW+ "Введите минимальную температуру" + Style.RESET_ALL))
+            maxt = float(input(Fore.YELLOW+ "Введите максимальную температуру" + Style.RESET_ALL))
             if not((0<= mint <= 100) and (0 <= maxt <= 100) and mint <= maxt):
                 raise ValueError
         except ValueError as e:
-            print("Одна или обе из температур введена(ы) неверно")
+            print(Fore.RED"Одна или обе из температур введена(ы) неверно"+Style.RESET_ALL)
+            self.dbconn.logger.warn(e)
             return []
         return [name,space,space,minh,maxh,mint,maxt]
         
@@ -120,9 +124,9 @@ class RoomTable(DbTable):
         data = self.__call_creation_wizard()
         if data:
             self.insert_one(data)
-            print("комната создана")
+            print(Fore.GREEN"комната создана" + Style.RESET_ALL)
             return
-        print("комната не создана, ошибка")
+        print(Fore.RED +"комната не создана, ошибка" + Style.RESET_ALL)
         return
 
 
