@@ -10,6 +10,7 @@ from shelf_table import ShelfTable
 import psycopg2.errors
 import colorama
 from colorama import Fore, Back, Style
+
 colorama.init()
 
 class Main:
@@ -198,7 +199,9 @@ except psycopg2.errors.CheckViolation:
     print(Fore.RED+"Нарушение ограничений целостности" + Style.RESET_ALL)
     m.main_cycle()
 except Exception as e:
-    print(e)
+    print(Fore.RED+str(e)+Style.RESET_ALL)
+    cur = connection.conn.cursor()
+    cur.execute("ROLLBACK TRANSACTION;")
     try:
         connection.logger.warn(e)
     except Exception as e:

@@ -1,8 +1,10 @@
 from dbtable import *
 from room_table import RoomTable
 import colorama
+import pglimits
 from colorama import Fore, Back, Style
 colorama.init()
+
 
 class ShelfTable(DbTable):
     def table_name(self)->str:
@@ -62,6 +64,8 @@ class ShelfTable(DbTable):
         """
         try:
             id_ = int(input(Fore.YELLOW+"Введите номер полки, которую хотите удалить: "+Style.RESET_ALL).strip())
+            if not id_ in self.create_list_of_ids():
+                raise ValueError
         except ValueError as e:
             print(Fore.RED+"неверно! Введите число!"+Style.RESET_ALL)
             self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
@@ -80,7 +84,7 @@ class ShelfTable(DbTable):
         """
         try:
             rid = int(input(Fore.YELLOW+"В какую комнату добавить новую полку?: "+Style.RESET_ALL))
-            if rid not in self.create_list_of_ids():
+            if ((rid not in self.create_list_of_ids()) or not(pglimits.PG_INT_MIN <= rid <= pglimits.PG_INT_MAX)):
                 raise ValueError
         except ValueError as e:
             print(Fore.RED+"ошибка, введите верное число"+Style.RESET_ALL)
@@ -89,6 +93,8 @@ class ShelfTable(DbTable):
 
         try:
             max_spaces = int(input(Fore.YELLOW+"Введите количество мест на полке: "+Style.RESET_ALL))
+            if not(pglimits.PG_INT_MIN <= max_spaces <= pglimits.PG_INT_MAX):
+                raise ValueError
         except ValueError as e:
             print(Fore.RED+"Введите число, то что ты ввел, редиска, не число"+Style.RESET_ALL)
             self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
@@ -100,6 +106,8 @@ class ShelfTable(DbTable):
         spaces_left = max_spaces
         try:
             l,w,h = map(float, input(Fore.YELLOW+"Введите габариты места на полке, разделяя их пробелом: "+Style.RESET_ALL).split())
+            if((NUMERIC7_0_MIN<=l<=NUMERIC7_0_MAX) or (NUMERIC7_0_MIN<=h<=NUMERIC7_0_MAX) or (NUMERIC7_0_MIN<= w<=NUMERIC7_0_MAX)):
+                raise ValueError
         except ValueError as e:
             print(Fore.RED+"ты в курсе что такое три числа?"+Style.RESET_ALL)
             self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)

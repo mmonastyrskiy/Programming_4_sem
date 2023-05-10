@@ -1,6 +1,7 @@
 from dbtable import *
 import colorama
 from colorama import Fore, Back, Style
+import pglimits
 colorama.init()
 class RoomTable(DbTable):
     def table_name(self) -> str:
@@ -87,10 +88,15 @@ class RoomTable(DbTable):
         """
         Запуск мастера создания комнаты
         """
-        name = input(Fore.YELLOW+ "Введите название комнаты: " + Style.RESET_ALL)
+        try:
+            name = input(Fore.YELLOW+ "Введите название комнаты: " + Style.RESET_ALL)
+            if (len(name) > pglimits.VARCHAR_MAX):
+                raise ValueError
+        except ValueError:
+            print(Fore.RED + "Строка слишком большая" + Style.RESET_ALL)
         try:
             space = float(input(Fore.YELLOW+ "Введите объем комнаты: " + Style.RESET_ALL))
-            if space < 0:
+            if (space < 0) or not (pglimits.NUMERIC7_2_MIN <= space <= pglimits.NUMERIC7_2_MAX):
                 raise ValueError
         except ValueError as e:
             print(Fore.RED+"Введено неверное число" + Style.RESET_ALL)
@@ -141,6 +147,11 @@ class RoomTable(DbTable):
         Контроль за соблюдением ограничений целостности при изменении полей в методе edit_room
         """
         if(col_2edit == 0):
+            try:
+                if len(new_data) > pglimits.VARCHAR_MAX:
+                    raise ValueError
+            except ValueError:
+                    print(Fore.RED + "Строка слишком большая" + Style.RESET_ALL)
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
             sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
@@ -157,7 +168,8 @@ class RoomTable(DbTable):
                 cur.execute(sql, (str(id_),))
                 recived = list(cur.fetchone())[0]
 
-                if (not(float(new_data) >= recived) or (float(new_data) <= 0)):
+                if (not(float(new_data) >= recived) or (float(new_data) <= 0) or 
+                    not(pglimits.NUMERIC7_2_MIN<= float(new_data) <= pglimits.NUMERIC7_2_MAX)):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
