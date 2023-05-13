@@ -25,8 +25,8 @@ END IF;
 elsif (TG_OP = 'UPDATE') then
 UPDATE "C21-703-7"."Shelf" SET spaces_left = spaces_left +1 WHERE shelf_id = old.shelf_id;
 UPDATE "C21-703-7"."Shelf" SET spaces_left = spaces_left -1 WHERE shelf_id = new.shelf_id;
-UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left + old.weight WHERE shelf_id = old.shelf_id;
 UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left - new.weight WHERE shelf_id = new.shelf_id;
+UPDATE "C21-703-7"."Shelf" SET weight_left = weight_left - old.weight WHERE shelf_id = old.shelf_id;
 END IF;
 RETURN new;
 END;
@@ -37,6 +37,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE place_restrictions_trigger_func()
 
 
+UPDATE "C21-703-7"."product" SET weight = 15;
 
 SELECT * FROM "C21-703-7"."Shelf";
 INSERT INTO "C21-703-7"."product" Values(nextval('pid_generator'),110,120,130,now(),1,60,30,20,50,5,slot_finder(5),10);
@@ -50,9 +51,6 @@ INSERT INTO "C21-703-7"."product" Values(nextval('pid_generator'),300,300,300,no
 SELECT * FROM "C21-703-7"."Shelf";
 UPDATE "C21-703-7".product SET shelf_id = 3 where shelf_id = 2;
 DELETE FROM "C21-703-7".product WHERE shelf_id = 5;
-
-
-
 --1
 CREATE OR REPLACE FUNCTION product_finder(client_n varchar(255),cdate date) RETURNS integer as $$
 BEGIN
