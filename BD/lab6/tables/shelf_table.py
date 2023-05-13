@@ -79,53 +79,62 @@ class ShelfTable(DbTable):
 
 
     def __call_creation_wizard(self)->list:
-        #print(pglimits.PG_INT_MIN)
+        rid = None
+        max_spaces = None
+
         """
         Мастер создания полок
         """
-        try:
-            rid = int(input(Fore.YELLOW+"В какую комнату добавить новую полку?: "+Style.RESET_ALL))
-            if ((rid not in self.create_list_of_ids()) or not(pglimits.PG_INT_MIN <= rid <= pglimits.PG_INT_MAX)):
-                raise ValueError
-        except ValueError as e:
-            print(Fore.RED+"ошибка, введите верное число"+Style.RESET_ALL)
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            return []
-
-        try:
-            max_spaces = int(input(Fore.YELLOW+"Введите количество мест на полке: "+Style.RESET_ALL))
-            if not(pglimits.PG_INT_MIN <= max_spaces <= pglimits.PG_INT_MAX):
-                raise ValueError
-        except ValueError as e:
-            print(Fore.RED+"Введите число, то что ты ввел, редиска, не число"+Style.RESET_ALL)
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            return []
-        if max_spaces <= 0:
-            print(Fore.RED+"Недопустимое количество мест")
-            self.dbconn.logger.warn(Fore.GREEN+str("Недопустимое количество мест")+Style.RESET_ALL)
-            return []
+        while not(type(rid) == int and rid in self.create_list_of_ids() and (0 < rid <= pglimits.PG_INT_MAX))
+            try:
+                rid = int(input(Fore.YELLOW+"В какую комнату добавить новую полку? для отмены введите 0: "+Style.RESET_ALL))
+                if not rid:
+                    return
+                if ((rid not in self.create_list_of_ids()) or not(pglimits.PG_INT_MIN <= rid <= pglimits.PG_INT_MAX)):
+                    raise ValueError
+            except ValueError as e:
+                print(Fore.RED+"ошибка, введите верное число"+Style.RESET_ALL)
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
+        while not (type(max_spaces) == int and (0 < max_spaces <= pglimits.PG_INT_MAX))
+            try:
+                max_spaces = int(input(Fore.YELLOW+"Введите количество мест на полке для отмены введите 0: "+Style.RESET_ALL))
+                if not max_spaces:
+                    return
+                if not(0 < max_spaces <= pglimits.PG_INT_MAX):
+                    raise ValueError
+            except ValueError as e:
+                print(Fore.RED+"Введите число, то что ты ввел, редиска, не число"+Style.RESET_ALL)
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
+            if max_spaces < 0:
+                print(Fore.RED+"Недопустимое количество мест")
+                self.dbconn.logger.warn(Fore.GREEN+str("Недопустимое количество мест")+Style.RESET_ALL)
         spaces_left = max_spaces
+        while not ((type(l) == float) and ((0<l<=pglimits.NUMERIC7_0_MAX))
+            and (type(w) == float) and ((0<w<=pglimits.NUMERIC7_0_MAX))
+            and (type(h) == float) and ((0<h<=pglimits.NUMERIC7_0_MAX))):
+
+            try:
+                l,w,h = map(float, input(Fore.YELLOW+"Введите габариты места на полке, разделяя их пробелом: "+Style.RESET_ALL).split())
+                if((pglimits.NUMERIC7_0_MIN<=l<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<=h<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<= w<=pglimits.NUMERIC7_0_MAX)):
+                    raise ValueError
+            except ValueError as e:
+                print(Fore.RED+"ты в курсе что такое три числа?"+Style.RESET_ALL)
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
+            if(l <= 0 or w <= 0 or h <= 0):
+                print(Fore.RED+"Недопустимый габарит")
+        
+        while not((type(max_weight)) and (0 < max_weight <= pglimits.NUMERIC7_2_MAX))
         try:
-            l,w,h = map(float, input(Fore.YELLOW+"Введите габариты места на полке, разделяя их пробелом: "+Style.RESET_ALL).split())
-            if((pglimits.NUMERIC7_0_MIN<=l<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<=h<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<= w<=pglimits.NUMERIC7_0_MAX)):
-                raise ValueError
-        except ValueError as e:
-            print(Fore.RED+"ты в курсе что такое три числа?"+Style.RESET_ALL)
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            return []
-        if(l <= 0 or w <= 0 or h <= 0):
-            print(Fore.RED+"Недопустимый габарит")
-            return []
-        try:
-            max_weight = float(input(Fore.YELLOW+"Введите максимальный нагрузочный вес полки: "+Style.RESET_ALL))
-            if not(pglimits.NUMERIC7_2_MIN <= max_weight <= pglimits.NUMERIC7_2_MAX):
+            max_weight = float(input(Fore.YELLOW+"Введите максимальный нагрузочный вес полки для отмены введите 0: "+Style.RESET_ALL))
+            if not max_weight:
+                return
+            if not(0 < max_weight <= pglimits.NUMERIC7_2_MAX):
                 raise ValueError
         except ValueError as e:
             print(Fore.RED+"Вес - число, а не то что ты ввел"+Style.RESET_ALL)
             self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
         if max_weight <= 0:
             print(Fore.RED+"Недопустимый вес"+Style.RESET_ALL)
-            return []
         weight_left = max_weight
         return [rid,max_spaces,spaces_left,w,h,l,max_weight,weight_left]
 
@@ -150,13 +159,9 @@ class ShelfTable(DbTable):
         обработчик создания полки
         """
         data = self.__call_creation_wizard()
-        if data:
+        if type(data) == list:
             self.insert_one(data)
-            print(Fore.GREEN + "Полка создана" + Style.RESET_ALL)
-            return
-        print(Fore.RED + "Полка не создана, ошибка" + Style.RESET_ALL)
-        return
-
+            print(Fore.GREEN + "полка создана"+ Style.RESET_ALL)
 
     def del_shelf_by_room(self,room_id:int):
         """
@@ -275,13 +280,16 @@ class ShelfTable(DbTable):
         редактор полок
         """
         self.show_shelves()
-        try:
-            inp = int(input(Fore.YELLOW + "Выберите полку которую хотите изменить: " + Style.RESET_ALL))
-            if inp not in self.create_list_of_ids():
-                raise ValueError
-        except ValueError as e:
-            print(Fore.RED+ "Введите правильное число" + Style.RESET_ALL)
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
+        while not (inp in self.create_list_of_ids()):
+            try:
+                inp = int(input(Fore.YELLOW + "Выберите полку которую хотите изменить для отмены введите 0: " + Style.RESET_ALL))
+                if not inp:
+                    return
+                if inp not in self.create_list_of_ids():
+                    raise ValueError
+            except ValueError as e:
+                print(Fore.RED+ "Введите правильное число" + Style.RESET_ALL)
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
 
         sql = f"SELECT * FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
         cur = self.dbconn.conn.cursor()
@@ -291,13 +299,14 @@ class ShelfTable(DbTable):
         data = list(zip(cols,recived))
         for col in enumerate(data):
             print(col[0],col[1], sep = "\t")
-        try:
-            col_2edit = int(input(Fore.YELLOW + "Введите номер поля, который хотите изменить: " + Style.RESET_ALL))
-            if not(0 <= col_2edit < len(data)):
-                raise ValueError
-        except ValueError as e:
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            print(Fore.RED + "Введено неверное число"+Style.RESET_ALL)
+        while not(type(col_2edit) == int and (0 <= col_2edit < len(data))):
+            try:
+                col_2edit = int(input(Fore.YELLOW + "Введите номер поля, который хотите изменить: " + Style.RESET_ALL))
+                if not(0 <= col_2edit < len(data)):
+                    raise ValueError
+            except ValueError as e:
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
+                print(Fore.RED + "Введено неверное число"+Style.RESET_ALL)
         new_data = input(Fore.YELLOW+"Введите новое значение поля: "+Style.RESET_ALL)
         if self.edit_check(inp,col_2edit,new_data):
             print(Fore.GREEN+"Изменения применены"+Style.RESET_ALL)

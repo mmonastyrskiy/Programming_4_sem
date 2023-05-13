@@ -45,15 +45,20 @@ class RoomTable(DbTable):
 
 
     def delete_room(self)->None:
+        id_ = None
         """
         Отрабатывает удаление комнаты
         """
-        try:
-            id_ = int(input(Fore.YELLOW +"Введите номер комнаты, которую хотите удалить: " + Style.RESET_ALL).strip())
-        except ValueError as e:
-            print(Fore.RED +"Введите номер по списку, введеное значение - не число" + Style.RESET_ALL)
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            return
+        while not ((type(id_) == int) and (id_ in self.create_list_of_ids())):
+            try:
+                id_ = int(input(Fore.YELLOW +"Введите номер комнаты, которую хотите удалить (введите -1 для отмены): " + Style.RESET_ALL).strip())
+                if id_ == -1:
+                    return
+                if id_ not in self.create_list_of_ids():
+                    raise ValueError
+            except ValueError as e:
+                print(Fore.RED +"Введите номер по списку, введеное значение - не число" + Style.RESET_ALL)
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
         sql = "DELETE FROM " + self.table_name()
         sql += f" WHERE id = (%s)"
         cur = self.dbconn.conn.cursor()
@@ -85,43 +90,62 @@ class RoomTable(DbTable):
 
 
     def __call_creation_wizard(self)->list:
+        name = ""
+        space = None
+        minh=maxh = None
+        mint=maxt = None
         """
         Запуск мастера создания комнаты
         """
-        try:
-            name = input(Fore.YELLOW+ "Введите название комнаты: " + Style.RESET_ALL)
-            if (len(name) > pglimits.VARCHAR_MAX):
-                raise ValueError
-        except ValueError:
-            print(Fore.RED + "Строка слишком большая" + Style.RESET_ALL)
-        try:
-            space = float(input(Fore.YELLOW+ "Введите объем комнаты: " + Style.RESET_ALL))
-            if (space < 0) or not (pglimits.NUMERIC7_2_MIN <= space <= pglimits.NUMERIC7_2_MAX):
-                raise ValueError
-        except ValueError as e:
-            print(Fore.RED+"Введено неверное число" + Style.RESET_ALL)
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            return []
+        while not (0< len(name) <= pglimits.VARCHAR_MAX):
+            try:
+                name = input(Fore.YELLOW+ "Введите название комнаты или пустую строку для отмены: " + Style.RESET_ALL)
+                if not(len(name)):
+                    return
+                if (len(name) > pglimits.VARCHAR_MAX):
+                    raise ValueError
+            except ValueError:
+                print(Fore.RED + "Строка слишком большая" + Style.RESET_ALL)
 
-        try:
-            minh = float(input(Fore.YELLOW+ "Введите минимальную влажность" + Style.RESET_ALL))
-            maxh = float(input(Fore.YELLOW+ "Введите максимальную влажность" + Style.RESET_ALL))
-            if not((0<= minh <= 100) and (0 <= maxh <= 100) and minh <= maxh):
-                raise ValueError
-        except ValueError as e:
-            print(Fore.RED+ "Одна или обе из влажностей введена(ы) неверно"+Style.RESET_ALL)
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            return []
+        while not ((type(space) == float) and (pglimits.NUMERIC7_2_MIN <= space <= pglimits.NUMERIC7_2_MAX)):
+            try:
+                space = float(input(Fore.YELLOW+ "Введите объем комнаты для отмены введите 0: " + Style.RESET_ALL))
+                if not space:
+                    return
+                if (space < 0) or not (pglimits.NUMERIC7_2_MIN <= space <= pglimits.NUMERIC7_2_MAX):
+                    raise ValueError
+            except ValueError as e:
+                print(Fore.RED+"Введено неверное число" + Style.RESET_ALL)
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
 
-        try:
-            mint = float(input(Fore.YELLOW+ "Введите минимальную температуру" + Style.RESET_ALL))
-            maxt = float(input(Fore.YELLOW+ "Введите максимальную температуру" + Style.RESET_ALL))
-            if not((0<= mint <= 100) and (0 <= maxt <= 100) and mint <= maxt):
-                raise ValueError
-        except ValueError as e:
-            print(Fore.RED + "Одна или обе из температур введена(ы) неверно"+Style.RESET_ALL)
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            return []
+        
+        while not ((type(minh)==float) and (type(maxh)==float) and (0< minh <= 100) and (0 < maxh <= 100) and minh <= maxh):
+            try:
+                minh = float(input(Fore.YELLOW+ "Введите минимальную влажность для отмены введите 0: " + Style.RESET_ALL))
+                if not(minh):
+                    return
+                maxh = float(input(Fore.YELLOW+ "Введите максимальную влажность для отмены введите 0: " + Style.RESET_ALL))
+                if not (maxh):
+                    return
+                if not((0< minh <= 100) and (0 < maxh <= 100) and minh <= maxh):
+                    raise ValueError
+            except ValueError as e:
+                print(Fore.RED+ "Одна или обе из влажностей введена(ы) неверно"+Style.RESET_ALL)
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
+
+        while not ((type(mint)==float) and (type(maxt)==float) and (0< mint <= 100) and (0 < maxt <= 100) and mint <= maxt):
+            try:
+                mint = float(input(Fore.YELLOW+ "Введите минимальную температуру для отмены введите 0: " + Style.RESET_ALL))
+                if not mint:
+                    return
+                maxt = float(input(Fore.YELLOW+ "Введите максимальную температуру для отмены введите 0: " + Style.RESET_ALL))
+                if not maxt:
+                    return
+                if not((0< mint <= 100) and (0 < maxt <= 100) and mint <= maxt):
+                    raise ValueError
+            except ValueError as e:
+                print(Fore.RED + "Одна или обе из температур введена(ы) неверно"+Style.RESET_ALL)
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
         return [name,space,space,minh,maxh,mint,maxt]
         
 
@@ -133,13 +157,9 @@ class RoomTable(DbTable):
         обработчик создания комнаты
         """
         data = self.__call_creation_wizard()
-        if data:
+        if type(data) == list:
             self.insert_one(data)
-            print(Fore.GREEN+"комната создана" + Style.RESET_ALL)
-            return
-        print(Fore.RED +"комната не создана, ошибка" + Style.RESET_ALL)
-        return
-
+            print(Fore.GREEN + "Комната создана"+ Style.RESET_ALL)
 
 
     def edit_check(self,id_:int, col_2edit: int, new_data:str)-> bool:
@@ -254,18 +274,19 @@ class RoomTable(DbTable):
 
 
     def edit_room(self):
+        inp = None
         """
         Изменение параметров существующей сущности комнаты
         """
         self.show_rooms()
-        try:
-            inp = int(input(Fore.YELLOW+"Выберите комнату которую хотите изменить: "+Style.RESET_ALL))
-            if inp not in self.create_list_of_ids():
-                raise ValueError
-        except ValueError as e:
-            print(Fore.RED+"Введите правильное число"+Style.RESET_ALL)
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            return
+        while not (inp in self.create_list_of_ids()):
+            try:
+                inp = int(input(Fore.YELLOW+"Выберите комнату которую хотите изменить: "+Style.RESET_ALL))
+                if inp not in self.create_list_of_ids():
+                    raise ValueError
+            except ValueError as e:
+                print(Fore.RED+"Введите правильное число"+Style.RESET_ALL)
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
         sql = f"SELECT * FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
         cur = self.dbconn.conn.cursor()
         cur.execute(sql, (str(inp),))
@@ -274,14 +295,14 @@ class RoomTable(DbTable):
         data = list(zip(cols,recived))
         for col in enumerate(data):
             print(col[0],col[1], sep = "\t")
-        try:
-            col_2edit = int(input(Fore.YELLOW+"Введите номер поля, который хотите изменить: " + Style.RESET_ALL))
-            if not(0 <= col_2edit < len(data)):
-                raise ValueError
-        except ValueError as e:
-            print(Fore.RED+"Введено неверное число"+Style.RESET_ALL)
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            return
+        while not(type(col_2edit) == int and (0 <= col_2edit < len(data))):
+            try:
+                col_2edit = int(input(Fore.YELLOW+"Введите номер поля, который хотите изменить: " + Style.RESET_ALL))
+                if not(0 <= col_2edit < len(data)):
+                    raise ValueError
+            except ValueError as e:
+                print(Fore.RED+"Введено неверное число"+Style.RESET_ALL)
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
         new_data = input(Fore.YELLOW+"Введите новое значение поля: "+Style.RESET_ALL)
         if self.edit_check(inp,col_2edit,new_data):
             print(Fore.GREEN+"Изменения применены"+Style.RESET_ALL)
