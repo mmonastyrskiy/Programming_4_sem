@@ -172,6 +172,8 @@ class RoomTable(DbTable):
                     raise ValueError
             except ValueError:
                     print(Fore.RED + "Строка слишком большая" + Style.RESET_ALL)
+                    new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                    return self.edit_check(id_,col_2edit,new_data)
             sql = "UPDATE " + self.table_name() + " SET " +self.column_names_without_id()[col_2edit]
             sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
@@ -192,9 +194,12 @@ class RoomTable(DbTable):
                     not(pglimits.NUMERIC7_2_MIN<= float(new_data) <= pglimits.NUMERIC7_2_MAX)):
                     raise ValueError
             except ValueError as e:
+                print(Fore.RED +"Введено неверное значение" + Style.RESET_ALL)
+                new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                return self.edit_check(id_,col_2edit,new_data)
+
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
 
-                return False
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
@@ -212,7 +217,9 @@ class RoomTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-                return False
+                print(Fore.RED +"Введено неверное значение" + Style.RESET_ALL)
+                new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                return self.edit_check(id_,col_2edit,new_data)
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
@@ -230,7 +237,9 @@ class RoomTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-                return False
+                print(Fore.RED +"Введено неверное значение" + Style.RESET_ALL)
+                new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                return self.edit_check(id_,col_2edit,new_data)
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
@@ -247,7 +256,9 @@ class RoomTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-                return False
+                print(Fore.RED +"Введено неверное значение" + Style.RESET_ALL)
+                new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                return self.edit_check(id_,col_2edit,new_data)
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
@@ -264,13 +275,16 @@ class RoomTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-                return False
+                print(Fore.RED +"Введено неверное значение" + Style.RESET_ALL)
+                new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                return self.edit_check(id_,col_2edit,new_data)
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
         else:
             print(Fore.RED+"Ошибка, затронут неверный столбец, возможно неизменяемый"+Style.RESET_ALL)
             return False
+
 
 
     def edit_room(self):

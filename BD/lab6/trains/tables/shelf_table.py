@@ -47,9 +47,12 @@ class ShelfTable(DbTable):
         return ['shelf_id']
         
     def all_by_room_id(self, room_id:int):
+        rt = RoomTable()
         """
         Возвращает список полок по айди комнаты
         """
+        if room_id not in rt.create_list_of_ids():
+            print(Fore.RED +"неверное значение, Выберите существующее" + Style.RESET_ALL)
         sql = "SELECT * FROM " + self.table_name()
         sql += " WHERE room_id = (%s)"
         sql += " ORDER BY "
@@ -81,16 +84,16 @@ class ShelfTable(DbTable):
     def __call_creation_wizard(self)->list:
         rid = None
         max_spaces = None
-
+        rt = RoomTable()
         """
         Мастер создания полок
         """
-        while not(type(rid) == int and rid in self.create_list_of_ids() and (0 < rid <= pglimits.PG_INT_MAX)):
+        while not(type(rid) == int and rid in rt.create_list_of_ids() and (0 < rid <= pglimits.PG_INT_MAX)):
             try:
                 rid = int(input(Fore.YELLOW+"В какую комнату добавить новую полку? для отмены введите 0: "+Style.RESET_ALL))
                 if not rid:
                     return
-                if ((rid not in self.create_list_of_ids()) or not(pglimits.PG_INT_MIN <= rid <= pglimits.PG_INT_MAX)):
+                if ((rid not in rt.create_list_of_ids()) or not(pglimits.PG_INT_MIN <= rid <= pglimits.PG_INT_MAX)):
                     raise ValueError
             except ValueError as e:
                 print(Fore.RED+"ошибка, введите верное число"+Style.RESET_ALL)

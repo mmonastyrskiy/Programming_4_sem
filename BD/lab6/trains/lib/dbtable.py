@@ -56,7 +56,7 @@ class DbTable:
         #print(arr)
         sql += ", ".join(arr + self.table_constraints())
         sql += ")"
-        print(sql)
+        #print(sql)
         cur = self.dbconn.conn.cursor()
         cur.execute(sql)
         self.dbconn.conn.commit()

@@ -198,12 +198,12 @@ except psycopg2.errors.UndefinedTable as UndefinedTable:
 except psycopg2.errors.CheckViolation:
     print(Fore.RED+"Нарушение ограничений целостности" + Style.RESET_ALL)
     m.main_cycle()
-except Exception as e:
-    print(Fore.RED+"Что-то пошло не так"+Style.RESET_ALL)
-    cur = m.connection.conn.cursor()
-    cur.execute("ROLLBACK TRANSACTION;")
-    try:
-        connection.logger.warn(e)
-    except Exception as e:
-        print(Fore.RED+"лог файл недоступен"+Style.RESET_ALL)
-    m.main_cycle()
+#except Exception as e:
+#    print(Fore.RED+"Что-то пошло не так"+Style.RESET_ALL)
+#    cur = m.connection.conn.cursor()
+#    cur.execute("ROLLBACK TRANSACTION;")
+#    try:
+#        connection.logger.warn(e)
+#    except Exception as e:
+#        print(Fore.RED+"лог файл недоступен"+Style.RESET_ALL)
+#    m.main_cycle()
