@@ -85,7 +85,7 @@ class ShelfTable(DbTable):
         """
         Мастер создания полок
         """
-        while not(type(rid) == int and rid in self.create_list_of_ids() and (0 < rid <= pglimits.PG_INT_MAX))
+        while not(type(rid) == int and rid in self.create_list_of_ids() and (0 < rid <= pglimits.PG_INT_MAX)):
             try:
                 rid = int(input(Fore.YELLOW+"В какую комнату добавить новую полку? для отмены введите 0: "+Style.RESET_ALL))
                 if not rid:
@@ -95,7 +95,7 @@ class ShelfTable(DbTable):
             except ValueError as e:
                 print(Fore.RED+"ошибка, введите верное число"+Style.RESET_ALL)
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-        while not (type(max_spaces) == int and (0 < max_spaces <= pglimits.PG_INT_MAX))
+        while not (type(max_spaces) == int and (0 < max_spaces <= pglimits.PG_INT_MAX)):
             try:
                 max_spaces = int(input(Fore.YELLOW+"Введите количество мест на полке для отмены введите 0: "+Style.RESET_ALL))
                 if not max_spaces:
@@ -123,16 +123,16 @@ class ShelfTable(DbTable):
             if(l <= 0 or w <= 0 or h <= 0):
                 print(Fore.RED+"Недопустимый габарит")
         
-        while not((type(max_weight)) and (0 < max_weight <= pglimits.NUMERIC7_2_MAX))
-        try:
-            max_weight = float(input(Fore.YELLOW+"Введите максимальный нагрузочный вес полки для отмены введите 0: "+Style.RESET_ALL))
-            if not max_weight:
-                return
-            if not(0 < max_weight <= pglimits.NUMERIC7_2_MAX):
-                raise ValueError
-        except ValueError as e:
-            print(Fore.RED+"Вес - число, а не то что ты ввел"+Style.RESET_ALL)
-            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
+        while not((type(max_weight)) and (0 < max_weight <= pglimits.NUMERIC7_2_MAX)):
+            try:
+                max_weight = float(input(Fore.YELLOW+"Введите максимальный нагрузочный вес полки для отмены введите 0: "+Style.RESET_ALL))
+                if not max_weight:
+                    return
+                if not(0 < max_weight <= pglimits.NUMERIC7_2_MAX):
+                    raise ValueError
+            except ValueError as e:
+                print(Fore.RED+"Вес - число, а не то что ты ввел"+Style.RESET_ALL)
+                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
         if max_weight <= 0:
             print(Fore.RED+"Недопустимый вес"+Style.RESET_ALL)
         weight_left = max_weight
