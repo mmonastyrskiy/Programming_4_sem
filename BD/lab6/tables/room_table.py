@@ -275,6 +275,7 @@ class RoomTable(DbTable):
 
     def edit_room(self):
         inp = None
+        col_2edit = None
         """
         Изменение параметров существующей сущности комнаты
         """

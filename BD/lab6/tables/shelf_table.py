@@ -279,6 +279,9 @@ class ShelfTable(DbTable):
         """
         редактор полок
         """
+        inp = None
+        col_2edit = None
+
         self.show_shelves()
         while not (inp in self.create_list_of_ids()):
             try:
@@ -301,7 +304,9 @@ class ShelfTable(DbTable):
             print(col[0],col[1], sep = "\t")
         while not(type(col_2edit) == int and (0 <= col_2edit < len(data))):
             try:
-                col_2edit = int(input(Fore.YELLOW + "Введите номер поля, который хотите изменить: " + Style.RESET_ALL))
+                col_2edit = int(input(Fore.YELLOW + "Введите номер поля, который хотите изменить: для отмены введите -1 " + Style.RESET_ALL))
+                if(col_2edit == -1):
+                    return
                 if not(0 <= col_2edit < len(data)):
                     raise ValueError
             except ValueError as e:
