@@ -79,6 +79,7 @@ class ShelfTable(DbTable):
 
 
     def __call_creation_wizard(self)->list:
+        #print(pglimits.PG_INT_MIN)
         """
         Мастер создания полок
         """
@@ -106,7 +107,7 @@ class ShelfTable(DbTable):
         spaces_left = max_spaces
         try:
             l,w,h = map(float, input(Fore.YELLOW+"Введите габариты места на полке, разделяя их пробелом: "+Style.RESET_ALL).split())
-            if((NUMERIC7_0_MIN<=l<=NUMERIC7_0_MAX) or (NUMERIC7_0_MIN<=h<=NUMERIC7_0_MAX) or (NUMERIC7_0_MIN<= w<=NUMERIC7_0_MAX)):
+            if((pglimits.NUMERIC7_0_MIN<=l<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<=h<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<= w<=pglimits.NUMERIC7_0_MAX)):
                 raise ValueError
         except ValueError as e:
             print(Fore.RED+"ты в курсе что такое три числа?"+Style.RESET_ALL)
@@ -117,6 +118,8 @@ class ShelfTable(DbTable):
             return []
         try:
             max_weight = float(input(Fore.YELLOW+"Введите максимальный нагрузочный вес полки: "+Style.RESET_ALL))
+            if not(pglimits.NUMERIC7_2_MIN <= max_weight <= pglimits.NUMERIC7_2_MAX):
+                raise ValueError
         except ValueError as e:
             print(Fore.RED+"Вес - число, а не то что ты ввел"+Style.RESET_ALL)
             self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)

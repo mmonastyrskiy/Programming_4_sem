@@ -200,7 +200,7 @@ except psycopg2.errors.CheckViolation:
     m.main_cycle()
 except Exception as e:
     print(Fore.RED+str(e)+Style.RESET_ALL)
-    cur = connection.conn.cursor()
+    cur = m.connection.conn.cursor()
     cur.execute("ROLLBACK TRANSACTION;")
     try:
         connection.logger.warn(e)
