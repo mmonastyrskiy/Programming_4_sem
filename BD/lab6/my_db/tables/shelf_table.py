@@ -195,7 +195,9 @@ class ShelfTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-                return False
+                print(Fore.RED +"Введено неверное значение" + Style.RESET_ALL)
+                new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                return self.edit_check(id_,col_2edit,new_data)
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
@@ -213,7 +215,9 @@ class ShelfTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-                return False
+                print(Fore.RED +"Введено неверное значение" + Style.RESET_ALL)
+                new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                return self.edit_check(id_,col_2edit,new_data)
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
@@ -226,7 +230,9 @@ class ShelfTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-                return False
+                print(Fore.RED +"Введено неверное значение" + Style.RESET_ALL)
+                new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                return self.edit_check(id_,col_2edit,new_data)
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
@@ -239,7 +245,9 @@ class ShelfTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-                return False
+                print(Fore.RED +"Введено неверное значение" + Style.RESET_ALL)
+                new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                return self.edit_check(id_,col_2edit,new_data)
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
@@ -252,7 +260,9 @@ class ShelfTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-                return False
+                print(Fore.RED +"Введено неверное значение" + Style.RESET_ALL)
+                new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                return self.edit_check(id_,col_2edit,new_data)
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
@@ -270,7 +280,9 @@ class ShelfTable(DbTable):
                     raise ValueError
             except ValueError as e:
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-                return False
+                print(Fore.RED +"Введено неверное значение" + Style.RESET_ALL)
+                new_data = input(Fore.YELLOW + "Введите заново: "+ Style.RESET_ALL)
+                return self.edit_check(id_,col_2edit,new_data)
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True

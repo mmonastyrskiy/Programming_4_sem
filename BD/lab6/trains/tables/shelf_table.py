@@ -11,47 +11,36 @@ class ShelfTable(DbTable):
         """
         Возвращает строку префикс + полка
         """
-        return self.dbconn.prefix + "Shelf"
+        return self.dbconn.prefix + "schedule"
     def columns(self)->dict:
         """
         возвращает колонки + локальные ограничения целостности
         """
         return {
-        "shelf_id":["serial","PRIMARY KEY"],
-        "room_id":["integer",f'REFERENCES {self.dbconn.prefix}Room ON DELETE CASCADE'],
-        "max_spaces":["integer","NOT NULL"],
-        "spaces_left":["integer", "NOT NULL"],
-        "slot_w":["numeric(7,0)", "NOT NULL"],
-        "slot_h":["numeric(7,0)","NOT NULL"],
-        "slot_l":["numeric(7,0)", "NOT NULL"],
-        "max_weight":["numeric(7,2)", "NOT NULL"],
-        "weight_left":["numeric(7,2)", "NOT NULL"]
-        }
+
+    "station_id": ["integer","NOT NULL"]
+    "route_id":["integer", "NOT NULL"]
+    '"time"':["time"]
+    "track":["integer","NOT NULL"]
+    }
 
     def table_constraints(self)->list:
         """
         Возвращает общие ограничения целостности
         """
-        return[
-        "CONSTRAINT positive_size_slot_w_shelf CHECK(slot_w >0)",
-        "CONSTRAINT positive_size_slot_h_shelf CHECK(slot_h >0)",
-        "CONSTRAINT positive_size_slot_l_shelf CHECK(slot_l >0)",
-        "CONSTRAINT positive_weight_shelf CHECK(max_weight >0)",
-        "CONSTRAINT positive_weight_left_shelf CHECK(weight_left >0)",
-        "CONSTRAINT wight_left_le_weight CHECK(weight_left <= max_weight)"
-        ]
+        return["PRIMARY KEY (station_id, route_id)"]
     def primary_key(self)->list:
         """
         Возвращает список ключевых полей
         """
-        return ['shelf_id']
+        return ['station_id','route_id']
         
-    def all_by_room_id(self, room_id:int):
-        rt = RoomTable()
+    def all_stations_by_route(self, route_id:int):
+        st = StationsTable()
         """
         Возвращает список полок по айди комнаты
         """
-        if room_id not in rt.create_list_of_ids():
+        if route_id not in st.create_list_of_ids():
             print(Fore.RED +"неверное значение, Выберите существующее" + Style.RESET_ALL)
         sql = "SELECT * FROM " + self.table_name()
         sql += " WHERE room_id = (%s)"
@@ -66,7 +55,7 @@ class ShelfTable(DbTable):
         Удаление полки
         """
         try:
-            id_ = int(input(Fore.YELLOW+"Введите номер полки, которую хотите удалить: "+Style.RESET_ALL).strip())
+            id_ = int(input(Fore.YELLOW+"Введите номер остановки, которую хотите удалить: "+Style.RESET_ALL).strip())
             if not id_ in self.create_list_of_ids():
                 raise ValueError
         except ValueError as e:
