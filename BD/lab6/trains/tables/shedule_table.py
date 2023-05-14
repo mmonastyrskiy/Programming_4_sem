@@ -267,26 +267,26 @@ class SheduleTable(DbTable):
         """
         Возвращает список полок по айди комнаты
         """
-        if route_id not in self.create_list_of_ids():
+        if route_id not in self.create_list_of_routes():
             print(Fore.RED +"неверное значение, Выберите существующее" + Style.RESET_ALL)
         sql = "SELECT * FROM " + self.table_name()
         sql += " WHERE route_id = (%s)"
         cur = self.dbconn.conn.cursor()
-        cur.execute(sql, (str(room_id),))
+        cur.execute(sql, (str(route_id),))
         return cur.fetchall()
 
 
-    def edit_shelf(self):
+    def edit_route(self):
         """
         редактор полок
         """
         inp = None
         col_2edit = None
 
-        self.show_shelves()
+        self.show_route()
         while not (inp in self.create_list_of_ids()):
             try:
-                inp = int(input(Fore.YELLOW + "Выберите полку которую хотите изменить для отмены введите 0: " + Style.RESET_ALL))
+                inp = int(input(Fore.YELLOW + "Выберите маршрут который хотите изменить для отмены введите 0: " + Style.RESET_ALL))
                 if not inp:
                     return
                 if inp not in self.create_list_of_ids():

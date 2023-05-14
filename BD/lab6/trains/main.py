@@ -126,8 +126,8 @@ class Main:
                 ST = StationsTable()
                 RT = SheduleTable()
                 RT.show_route()
-                rid = int(input(Fore.YELLOW +"выберите комнату для просмотра полок: " + Style.RESET_ALL))
-                data = ST.all_by_room_id(rid)
+                rid = int(input(Fore.YELLOW +"выберите маршрут для просмотра станций: " + Style.RESET_ALL))
+                data = RT.all_by_route_id(rid)
                 print(data)
                 next_step = "0"
             elif next_step != "0" and next_step != "9" and next_step != "3":
