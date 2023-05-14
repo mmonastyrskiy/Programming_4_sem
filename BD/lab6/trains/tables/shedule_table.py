@@ -1,12 +1,12 @@
 from dbtable import *
-from room_table import RoomTable
 import colorama
 import pglimits
 from colorama import Fore, Back, Style
+from station_table import StationsTable
 colorama.init()
 
 
-class ShelfTable(DbTable):
+class SheduleTable(DbTable):
     def table_name(self)->str:
         """
         Возвращает строку префикс + полка
@@ -16,41 +16,32 @@ class ShelfTable(DbTable):
         """
         возвращает колонки + локальные ограничения целостности
         """
-        return {
-
-    "station_id": ["integer","NOT NULL"]
-    "route_id":["integer", "NOT NULL"]
-    '"time"':["time"]
+        return {"id":["serial"],
+        "route_id":["integer"],
+    "station_id": ["integer","NOT NULL",f"REFERENCES {self.dbconn.prefix}stations (id) ON DELETE CASCADE"],
+    '"time"':["time"],
     "track":["integer","NOT NULL"]
     }
+
+
+    def create_list_of_routes(self)-> list:
+        """
+        список айдишников в таблице
+        """
+        sql = f"SELECT route_id FROM " + self.table_name()
+        cur = self.dbconn.conn.cursor()
+        cur.execute(sql)
+        ids = [x[0] for x in cur.fetchall()]
+        #print(ids)
+        return ids
 
     def table_constraints(self)->list:
         """
         Возвращает общие ограничения целостности
         """
-        return["PRIMARY KEY (station_id, route_id)"]
-    def primary_key(self)->list:
-        """
-        Возвращает список ключевых полей
-        """
-        return ['station_id','route_id']
-        
-    def all_stations_by_route(self, route_id:int):
-        st = StationsTable()
-        """
-        Возвращает список полок по айди комнаты
-        """
-        if route_id not in st.create_list_of_ids():
-            print(Fore.RED +"неверное значение, Выберите существующее" + Style.RESET_ALL)
-        sql = "SELECT * FROM " + self.table_name()
-        sql += " WHERE room_id = (%s)"
-        sql += " ORDER BY "
-        sql += ", ".join(self.primary_key())
-        cur = self.dbconn.conn.cursor()
-        cur.execute(sql, (str(room_id),))
-        return cur.fetchall()
+        return["UNIQUE (station_id, route_id)"]
 
-    def delete_shelf(self):
+    def delete_station(self):
         """
         Удаление полки
         """
@@ -68,102 +59,110 @@ class ShelfTable(DbTable):
         cur = self.dbconn.conn.cursor()
         cur.execute(sql,(str(id_),))
         self.dbconn.conn.commit()
-
+    def time_validator(self,x:str)-> bool:
+        x = x.strip().split(":")
+        try:
+            h,m,s = x
+            if (not(0<=int(h)<=23) and not(0<=int(m)<=59) and not(0<=int(s)<=59)):
+                return False
+            return True
+        except ValueError as e:
+            print(Fore.RED+"неверно! Введите время в установленном формате (HH:MM:SS)!"+Style.RESET_ALL)
+            self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
 
     def __call_creation_wizard(self)->list:
-        rid = None
-        max_spaces = None
-        rt = RoomTable()
+        rid =sid=None
+        track = None
+        x = ""
+        st = StationsTable()
         """
         Мастер создания полок
         """
-        while not(type(rid) == int and rid in rt.create_list_of_ids() and (0 < rid <= pglimits.PG_INT_MAX)):
+    
+        while not(type(sid) == int and sid in st.create_list_of_ids() and (0 < sid <= pglimits.PG_INT_MAX)):
             try:
-                rid = int(input(Fore.YELLOW+"В какую комнату добавить новую полку? для отмены введите 0: "+Style.RESET_ALL))
-                if not rid:
+                sid = int(input(Fore.YELLOW+"Какую станцию добавить? для отмены введите 0: "+Style.RESET_ALL))
+                if not sid:
                     return
-                if ((rid not in rt.create_list_of_ids()) or not(pglimits.PG_INT_MIN <= rid <= pglimits.PG_INT_MAX)):
+                if ((sid not in st.create_list_of_ids()) or not(pglimits.PG_INT_MIN <= sid <= pglimits.PG_INT_MAX)):
                     raise ValueError
             except ValueError as e:
                 print(Fore.RED+"ошибка, введите верное число"+Style.RESET_ALL)
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-        while not (type(max_spaces) == int and (0 < max_spaces <= pglimits.PG_INT_MAX)):
+
+        while not(type(rid) == int and rid in self.create_list_of_routes() and (0 < rid <= pglimits.PG_INT_MAX)):
             try:
-                max_spaces = int(input(Fore.YELLOW+"Введите количество мест на полке для отмены введите 0: "+Style.RESET_ALL))
-                if not max_spaces:
+                rid = int(input(Fore.YELLOW+"К какому маршруту добавить станцию? для отмены введите 0: "+Style.RESET_ALL))
+                if not rid:
                     return
-                if not(0 < max_spaces <= pglimits.PG_INT_MAX):
+                if ((rid not in self.create_list_of_routes()) or not(pglimits.PG_INT_MIN <= rid <= pglimits.PG_INT_MAX)):
                     raise ValueError
             except ValueError as e:
-                print(Fore.RED+"Введите число, то что ты ввел, редиска, не число"+Style.RESET_ALL)
+                print(Fore.RED+"ошибка, введите верное число"+Style.RESET_ALL)
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            if max_spaces < 0:
-                print(Fore.RED+"Недопустимое количество мест")
-                self.dbconn.logger.warn(Fore.GREEN+str("Недопустимое количество мест")+Style.RESET_ALL)
-        spaces_left = max_spaces
-        while not ((type(l) == float) and ((0<l<=pglimits.NUMERIC7_0_MAX))
-            and (type(w) == float) and ((0<w<=pglimits.NUMERIC7_0_MAX))
-            and (type(h) == float) and ((0<h<=pglimits.NUMERIC7_0_MAX))):
 
+
+        while not((type(track)==int) and (0 < track <= pglimits.PG_INT_MAX)):
             try:
-                l,w,h = map(float, input(Fore.YELLOW+"Введите габариты места на полке, разделяя их пробелом: "+Style.RESET_ALL).split())
-                if((pglimits.NUMERIC7_0_MIN<=l<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<=h<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<= w<=pglimits.NUMERIC7_0_MAX)):
-                    raise ValueError
-            except ValueError as e:
-                print(Fore.RED+"ты в курсе что такое три числа?"+Style.RESET_ALL)
-                self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-            if(l <= 0 or w <= 0 or h <= 0):
-                print(Fore.RED+"Недопустимый габарит")
-        
-        while not((type(max_weight)) and (0 < max_weight <= pglimits.NUMERIC7_2_MAX)):
-            try:
-                max_weight = float(input(Fore.YELLOW+"Введите максимальный нагрузочный вес полки для отмены введите 0: "+Style.RESET_ALL))
-                if not max_weight:
+                track = int(input(Fore.YELLOW+"Введите путь прибытия для отмены введите 0: "+Style.RESET_ALL))
+                if not track:
                     return
-                if not(0 < max_weight <= pglimits.NUMERIC7_2_MAX):
+                if not(0 < track <= pglimits.PG_INT_MAX):
                     raise ValueError
             except ValueError as e:
-                print(Fore.RED+"Вес - число, а не то что ты ввел"+Style.RESET_ALL)
+                print(Fore.RED+"путь - число, а не то что ты ввел"+Style.RESET_ALL)
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
-        if max_weight <= 0:
-            print(Fore.RED+"Недопустимый вес"+Style.RESET_ALL)
-        weight_left = max_weight
-        return [rid,max_spaces,spaces_left,w,h,l,max_weight,weight_left]
+        if track <= 0:
+            print(Fore.RED+"Недопустимый путь"+Style.RESET_ALL)
+        x =input(Fore.YELLOW+"Введите время прибытия или оставьте строку пустой для отмены"+Style.RESET_ALL)
+        while not(self.time_validator(x)):
+            x =input(Fore.YELLOW+"Введите время прибытия или оставьте строку пустой для отмены"+Style.RESET_ALL)
+            if not x:
+                return
+        return [rid,sid,x,track]
 
 
 
 
-    def show_shelves(self)->None:
+    def show_route(self)->None:
         """
         отобразить полки
         """
-        menu = Fore.YELLOW+""" Просмотр списка полок
-№\tКомната\tмакс мест\tоставшиеся места\tгабариты места\tвес макс\t вес оставшийся""" + Style.RESET_ALL
-        print(menu)
+        menu = Fore.YELLOW+""" Просмотр списка маршрутов
+№\tМаршрут\tСтанция\tВремя\tпуть""" + Style.RESET_ALL
+        print(Fore.YELLOW + menu + Style.RESET_ALL)
         lst = self.all()
         for i in lst:
-            print(str(i[0]) + "\t" + str(i[1]) + "\t" + str(i[2]) + "\t" + str(i[3]) + "\t"
-                f"{str(i[4])} x {str(i[5])} x {str(i[6])}" + "\t" + str(i[7]) + "\t" + str(i[8]))
+            print(str(i[0]) + "\t" + str(i[1]) + "\t" + str(i[2]) + "\t" + str(i[3])+"\t" + str(i[4]))
+        menu = Fore.YELLOW +"""Дальнейшие операции:
+    """+Style.RESET_ALL +Fore.GREEN + str(0) + Style.RESET_ALL+"""  - возврат в главное меню;
+    """+Fore.GREEN + str(3) + Style.RESET_ALL+"""  - добавление новой комнаты;
+    """+Fore.GREEN + str(4) + Style.RESET_ALL+"""  - удаление комнаты;
+    """+Fore.GREEN + str(5) + Style.RESET_ALL+"""  - просмотр стеллажей комнаты;
+    """+Fore.GREEN + str(6) + Style.RESET_ALL+"""  - редактировать комнату
+    """+Fore.GREEN + str(9) + Style.RESET_ALL+"""  - выход."""
+        print(menu)
+        return
 
 
-    def add_shelf_attached_to_room(self)-> None:
+    def add_route_attached_to_station(self)-> None:
         """
         обработчик создания полки
         """
         data = self.__call_creation_wizard()
         if type(data) == list:
             self.insert_one(data)
-            print(Fore.GREEN + "полка создана"+ Style.RESET_ALL)
+            print(Fore.GREEN + "маршрут создан"+ Style.RESET_ALL)
 
-    def del_shelf_by_room(self,room_id:int):
+    def del_route_by_station(self,station_id:int):
         """
         удаление полки
         """
         lst = self.all_by_room_id(room_id)
         for i in lst:
-            print(str(i[0]) + "\t" + str(i[1]) + "\t" + str(i[2]))
+            print(str(i[0]) + "\t" + str(i[1]) + "\t" + str(i[2]) + "\t" + str(i[3])+"\t" + str(i[4]))
             self.delete_shelf()
-            self.all_by_room_id(room_id)
+            self.all_by_room_id(station_id)
 
 
 
@@ -264,7 +263,17 @@ class ShelfTable(DbTable):
             self.dbconn.conn.commit()
             return True
 
-
+    def all_by_route_id(self, route_id:int):
+        """
+        Возвращает список полок по айди комнаты
+        """
+        if route_id not in self.create_list_of_ids():
+            print(Fore.RED +"неверное значение, Выберите существующее" + Style.RESET_ALL)
+        sql = "SELECT * FROM " + self.table_name()
+        sql += " WHERE route_id = (%s)"
+        cur = self.dbconn.conn.cursor()
+        cur.execute(sql, (str(room_id),))
+        return cur.fetchall()
 
 
     def edit_shelf(self):

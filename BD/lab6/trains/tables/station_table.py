@@ -3,7 +3,7 @@ import colorama
 from colorama import Fore, Back, Style
 import pglimits
 colorama.init()
-class RoomTable(DbTable):
+class StationsTable(DbTable):
     def table_name(self) -> str:
         """
     Возвращает строку схема + название таблицы
@@ -16,7 +16,7 @@ class RoomTable(DbTable):
         Возвращает список полей + ограничения целостности на конкретные поля
         """
         return {"id": ["serial","PRIMARY KEY"],
-    "name": ["character varying(100)", "NOT NULL"]
+    "name": ["character varying(100)", "NOT NULL"],
     "zone_id":["integer", "NOT NULL"]
     }
 

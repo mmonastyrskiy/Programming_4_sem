@@ -5,8 +5,8 @@ sys.path.append('lib')
 from project_config import *
 from dbconnection import *
 from dbtable import DbTable
-from room_table import RoomTable
-from shelf_table import ShelfTable
+from shedule_table import SheduleTable
+from station_table import StationsTable
 import psycopg2.errors
 import colorama
 from colorama import Fore, Back, Style
@@ -26,47 +26,56 @@ class Main:
         """
         инициализация таблиц
         """
-        rt = RoomTable()
-        st = ShelfTable()
+        rt = SheduleTable()
+        st = StationsTable()
         st.drop()
         rt.drop()
-        rt.create()
         st.create()
+        rt.create()
         return
 
     def db_insert_somethings(self):
         """
         заполнение некими данными
         """
-        rt = RoomTable()
-        st = ShelfTable()
-        rt.insert_one(['Room1',50,50,20,60,18,32])
-        rt.insert_one(['Room2',500,500,40,100,22,32])
-        rt.insert_one(['Room3',50,50,20,60,18,32])
-        rt.insert_one(['Garage1',10000,10000,40,100,22,32])
-        rt.insert_one(['Room4',50,50,20,60,18,32])
+        rt = SheduleTable()
+        st = StationsTable()
 
-        st.insert_one([1,10,10,500,400,300,500,500])
-        st.insert_one([1,50,50,500,400,400,600,600])
-        st.insert_one([2,40,40,500,500,500,500,500])
-        st.insert_one([3,40,40,500,500,500,500,500])
-        st.insert_one([4,5,5,500,500,500,40,40])
+
+
+        st.insert_one(['Бутово',1])
+        st.insert_one(['Царицыно',2])
+        st.insert_one(['Печатники',2])
+        st.insert_one(['Новохохловская',3])
+        st.insert_one(['Москва-товарная',3])
+        st.insert_one(['Москва-Курская',3])
+        st.insert_one(['Москва-Ярославская',3])
+        st.insert_one(['Маленковская',3])
+        st.insert_one(['Яуза',4])
+        st.insert_one(['Ростокино',4])
+        st.insert_one(['Мытищи',5])
+
+        rt.insert_one([1,1,"12:00:00",2])
+        rt.insert_one([1,3,'18:20:10',4])
+        rt.insert_one([1,2,'22:15:30',3])
+        rt.insert_one([2,4,'19:35:30',1])
+        rt.insert_one([2,7,'05:00:00',2])
 
     def db_drop(self):
         """
         drop структуры
         """
-        rt = RoomTable()
-        st = ShelfTable()
+        rt = SheduleTable()
+        st = StationsTable()
         st.drop()
         rt.drop()
         
 
     def show_main_menu(self):
         menu = Fore.YELLOW +"""Дальнейшие операции:
-    """+Style.RESET_ALL +Fore.GREEN + str(1) + Style.RESET_ALL+"""  - взаимодействовать с комнатами
+    """+Style.RESET_ALL +Fore.GREEN + str(1) + Style.RESET_ALL+"""  - взаимодействовать с маршрутами
     """+Fore.GREEN + str(2) + Style.RESET_ALL+"""  - Очистка и создание таблиц
-    """+Fore.GREEN + str(3) + Style.RESET_ALL+"""  - Взаимодействовать с полками
+    """+Fore.GREEN + str(3) + Style.RESET_ALL+"""  - Взаимодействовать с станциями
     """+Fore.GREEN + str(9) + Style.RESET_ALL+"""  - выход."""
         print(menu)
         return
@@ -100,23 +109,23 @@ class Main:
 
         while True:
             if next_step == "4":
-                RT = RoomTable()
-                RT.delete_room()
+                RT = SheduleTable()
+                RT.delete_station()
                 return "1"
             elif next_step == "7":
                 print("Пока не реализовано!")
             elif next_step == '6':
-                RT = RoomTable()
-                RT.edit_room()
+                RT = SheduleTable()
+                RT.edit_route()
                 next_step = "0"
             elif next_step == "3":
-                RT = RoomTable()
-                RT.add_rooms()
+                RT = SheduleTable()
+                RT.add_route_attached_to_station()
                 next_step = "0"
             elif next_step == "5":
-                ST = ShelfTable()
-                RT = RoomTable()
-                RT.show_rooms()
+                ST = StationsTable()
+                RT = SheduleTable()
+                RT.show_route()
                 rid = int(input(Fore.YELLOW +"выберите комнату для просмотра полок: " + Style.RESET_ALL))
                 data = ST.all_by_room_id(rid)
                 print(data)
@@ -133,16 +142,16 @@ class Main:
 
         menu = Fore.YELLOW +"""Дальнейшие операции:
     """+Style.RESET_ALL +Fore.GREEN + str(0) + Style.RESET_ALL+"""  - возврта в главное меню
-    """+Fore.GREEN + str(3) + Style.RESET_ALL+"""  - добавление новой полки к комнате;
-    """+Fore.GREEN + str(4) + Style.RESET_ALL+"""  - удаление полки;
-    """+Fore.GREEN + str(5) + Style.RESET_ALL+"""  - просмотр стеллажей комнаты;
+    """+Fore.GREEN + str(3) + Style.RESET_ALL+"""  - добавление новой станции к маршруту;
+    """+Fore.GREEN + str(4) + Style.RESET_ALL+"""  - удаление станции;
+    """+Fore.GREEN + str(5) + Style.RESET_ALL+"""  - просмотр станций комнаты;
     """+Fore.GREEN + str(6) + Style.RESET_ALL+"""  - редактирование полки
     """+Fore.GREEN + str(9) + Style.RESET_ALL + "  - выход."""
 
         print(menu)
 
 
-        ST = ShelfTable()
+        ST = StationsTable()
         user_chose = input(Fore.YELLOW +"выберите нужный пункт меню: " + Style.RESET_ALL)
         if user_chose == "0":
             return
@@ -154,7 +163,7 @@ class Main:
             ST.show_shelves()
             return
         elif user_chose == "5":
-            RT = RoomTable()
+            RT = SheduleTable()
             RT.show_rooms()
             rid = int(input(Fore.YELLOW +"выберите комнату для просмотра полок: " + Style.RESET_ALL))
             data = ST.all_by_room_id(rid)
@@ -172,8 +181,8 @@ class Main:
                 next_step = self.read_next_step()
                 current_menu = self.after_main_menu(next_step)
             elif current_menu == "1":
-                RT = RoomTable()
-                RT.show_rooms()
+                RT = SheduleTable()
+                RT.show_route()
                 next_step = self.read_next_step()
                 current_menu = self.after_show_people(next_step)
             elif current_menu == "2":
@@ -187,17 +196,18 @@ class Main:
 
 
     def test(self):
-        DbTable.dbconn.test()
+        DbTable.dbconn.teStationsTable()
 
 m = Main()
-try:
-    m.main_cycle()
-except psycopg2.errors.UndefinedTable as UndefinedTable:
-    print(Fore.RED +"Кажется заданная таблица не найдена, проверьте структуру базы данных или выполните действие 2 из главного меню, чтобы создать Таблицы\n" + Style.RESET_ALL
-        , UndefinedTable)
-except psycopg2.errors.CheckViolation:
-    print(Fore.RED+"Нарушение ограничений целостности" + Style.RESET_ALL)
-    m.main_cycle()
+m.main_cycle()
+#try:
+#    m.main_cycle()
+#except psycopg2.errors.UndefinedTable as UndefinedTable:
+#    print(Fore.RED +"Кажется заданная таблица не найдена, проверьте структуру базы данных или выполните действие 2 из главного меню, чтобы создать Таблицы\n" + Style.RESET_ALL
+#        , UndefinedTable)
+#except psycopg2.errors.CheckViolation:
+#    print(Fore.RED+"Нарушение ограничений целостности" + Style.RESET_ALL)
+#    m.main_cycle()
 #except Exception as e:
 #    print(Fore.RED+"Что-то пошло не так"+Style.RESET_ALL)
 #    cur = m.connection.conn.cursor()
