@@ -206,4 +206,4 @@ except psycopg2.errors.CheckViolation:
 #        connection.logger.warn(e)
 #    except Exception as e:
 #        print(Fore.RED+"лог файл недоступен"+Style.RESET_ALL)
-#    m.main_cycle()
+#    m.main_cycle()#

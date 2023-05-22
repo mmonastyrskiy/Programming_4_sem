@@ -136,13 +136,41 @@ class SheduleTable(DbTable):
             print(str(i[0]) + "\t" + str(i[1]) + "\t" + str(i[2]) + "\t" + str(i[3])+"\t" + str(i[4]))
         menu = Fore.YELLOW +"""Дальнейшие операции:
     """+Style.RESET_ALL +Fore.GREEN + str(0) + Style.RESET_ALL+"""  - возврат в главное меню;
-    """+Fore.GREEN + str(3) + Style.RESET_ALL+"""  - добавление новой комнаты;
-    """+Fore.GREEN + str(4) + Style.RESET_ALL+"""  - удаление комнаты;
-    """+Fore.GREEN + str(5) + Style.RESET_ALL+"""  - просмотр стеллажей комнаты;
-    """+Fore.GREEN + str(6) + Style.RESET_ALL+"""  - редактировать комнату
+    """+Fore.GREEN + str(3) + Style.RESET_ALL+"""  - добавление новой станции к маршруту;
+    """+Fore.GREEN + str(4) + Style.RESET_ALL+"""  - удаление маршрута;
+    """+Fore.GREEN + str(5) + Style.RESET_ALL+"""  - просмотр станций маршрута;
+    """+Fore.GREEN + str(6) + Style.RESET_ALL+"""  - редактировать маршрут
     """+Fore.GREEN + str(9) + Style.RESET_ALL+"""  - выход."""
         print(menu)
         return
+
+    def all_by_route_id(self, route_id:int):
+        """
+        Возвращает список полок по айди комнаты
+        """
+        if route_id not in self.create_list_of_ids():
+            print(Fore.RED +"неверное значение, Выберите существующее" + Style.RESET_ALL)
+        sql = "SELECT station_id FROM " + self.table_name()
+        sql += " WHERE route_id = (%s)"
+        sql += " ORDER BY "
+        sql += ", ".join(self.primary_key())
+        cur = self.dbconn.conn.cursor()
+        cur.execute(sql, (str(route_id),))
+        return cur.fetchall()
+
+    def all_by_station_id(self, route_id:int):
+        """
+        Возвращает список полок по айди комнаты
+        """
+        if route_id not in self.create_list_of_ids():
+            print(Fore.RED +"неверное значение, Выберите существующее" + Style.RESET_ALL)
+        sql = "SELECT station_id FROM " + self.table_name()
+        sql += " WHERE station_id = (%s)"
+        sql += " ORDER BY "
+        sql += ", ".join(self.primary_key())
+        cur = self.dbconn.conn.cursor()
+        cur.execute(sql, (str(route_id),))
+        return cur.fetchall()
 
 
     def add_route_attached_to_station(self)-> None:
@@ -158,11 +186,11 @@ class SheduleTable(DbTable):
         """
         удаление полки
         """
-        lst = self.all_by_room_id(room_id)
+        lst = self.all_by_route_id(route_id)
         for i in lst:
             print(str(i[0]) + "\t" + str(i[1]) + "\t" + str(i[2]) + "\t" + str(i[3])+"\t" + str(i[4]))
-            self.delete_shelf()
-            self.all_by_room_id(station_id)
+            self.delete_route()
+            self.all_by_route_id(station_id)
 
 
 
@@ -262,18 +290,6 @@ class SheduleTable(DbTable):
             cur.execute(sql, [new_data, str(id_)])
             self.dbconn.conn.commit()
             return True
-
-    def all_by_route_id(self, route_id:int):
-        """
-        Возвращает список полок по айди комнаты
-        """
-        if route_id not in self.create_list_of_routes():
-            print(Fore.RED +"неверное значение, Выберите существующее" + Style.RESET_ALL)
-        sql = "SELECT * FROM " + self.table_name()
-        sql += " WHERE route_id = (%s)"
-        cur = self.dbconn.conn.cursor()
-        cur.execute(sql, (str(route_id),))
-        return cur.fetchall()
 
 
     def edit_route(self):

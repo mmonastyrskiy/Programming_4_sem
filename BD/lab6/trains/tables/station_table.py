@@ -50,14 +50,14 @@ class StationsTable(DbTable):
         id_ = str(id_)
         cur.execute(sql, (id_,))
         self.dbconn.conn.commit()
-        self.show_rooms()
+        self.show_station()
 
 
     def show_station(self)->None:
         """
         отобразить список комнат в терминал
         """
-        menu = """Просмотр списка комнат!
+        menu = """Просмотр списка Станций!
 №\tИмя\tЗона\t"""
         print(Fore.YELLOW + menu + Style.RESET_ALL)
         lst = self.all()
@@ -90,7 +90,7 @@ class StationsTable(DbTable):
             except ValueError:
                 print(Fore.RED + "Строка слишком большая" + Style.RESET_ALL)
 
-        while not ((type(zone_id) == int) and (pglimits.NUMERIC7_2_MIN <= zone_id <= pglimits.PG_INT_MAX)):
+        while not ((type(zone_id) == int) and (pglimits.PG_INT_MIN <= zone_id <= pglimits.PG_INT_MAX)):
             try:
                 zone_id = int(input(Fore.YELLOW+ "Введите зону станции для отмены введите 0: " + Style.RESET_ALL))
                 if not zone_id:
@@ -160,7 +160,7 @@ class StationsTable(DbTable):
         """
         Изменение параметров существующей сущности комнаты
         """
-        self.show_rooms()
+        self.show_station()
         while not (inp in self.create_list_of_ids()):
             try:
                 inp = int(input(Fore.YELLOW+"Выберите станцию которую хотите изменить: "+Style.RESET_ALL))

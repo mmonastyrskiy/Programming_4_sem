@@ -185,9 +185,9 @@ class RoomTable(DbTable):
             sql += " = (%s) WHERE " + self.primary_key()[0] + " = (%s)"
             cur = self.dbconn.conn.cursor()
             try:
-                sql = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
+                sql_ = f"SELECT {self.column_names_without_id()[col_2edit+1]} FROM {self.table_name()} WHERE {self.primary_key()[0]} = (%s)"
                 cur = self.dbconn.conn.cursor()
-                cur.execute(sql, (str(id_),))
+                cur.execute(sql_, (str(id_),))
                 recived = list(cur.fetchone())[0]
 
                 if (not(float(new_data) >= recived) or (float(new_data) <= 0) or 

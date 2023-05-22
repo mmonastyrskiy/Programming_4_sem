@@ -139,16 +139,8 @@ class Main:
         """
          Меню полки + обработчик перехода
          """
-
-        menu = Fore.YELLOW +"""Дальнейшие операции:
-    """+Style.RESET_ALL +Fore.GREEN + str(0) + Style.RESET_ALL+"""  - возврта в главное меню
-    """+Fore.GREEN + str(3) + Style.RESET_ALL+"""  - добавление новой станции к маршруту;
-    """+Fore.GREEN + str(4) + Style.RESET_ALL+"""  - удаление станции;
-    """+Fore.GREEN + str(5) + Style.RESET_ALL+"""  - просмотр станций комнаты;
-    """+Fore.GREEN + str(6) + Style.RESET_ALL+"""  - редактирование полки
-    """+Fore.GREEN + str(9) + Style.RESET_ALL + "  - выход."""
-
-        print(menu)
+        ST = StationsTable()
+        ST.show_station()
 
 
         ST = StationsTable()
@@ -156,21 +148,21 @@ class Main:
         if user_chose == "0":
             return
         elif user_chose == "3":
-            ST.add_shelf_attached_to_room()
+            ST.add_station()
             return
         elif user_chose == '4':
-            ST.delete_shelf()
-            ST.show_shelves()
+            ST.delete_station()
+            #ST.show_station()
             return
         elif user_chose == "5":
             RT = SheduleTable()
-            RT.show_rooms()
-            rid = int(input(Fore.YELLOW +"выберите комнату для просмотра полок: " + Style.RESET_ALL))
-            data = ST.all_by_room_id(rid)
+            RT.show_route()
+            rid = int(input(Fore.YELLOW +"выберите станцию для просмотра маршрутов: " + Style.RESET_ALL))
+            data = RT.all_by_station_id(rid)
             print(data)
             return
         elif user_chose == "6":
-            ST.edit_shelf()
+            ST.edit_station()
             return
     def main_cycle(self):
         current_menu = "0"
@@ -199,21 +191,21 @@ class Main:
         DbTable.dbconn.teStationsTable()
 
 m = Main()
-m.main_cycle()
-#try:
-#    m.main_cycle()
-#except psycopg2.errors.UndefinedTable as UndefinedTable:
-#    print(Fore.RED +"Кажется заданная таблица не найдена, проверьте структуру базы данных или выполните действие 2 из главного меню, чтобы создать Таблицы\n" + Style.RESET_ALL
-#        , UndefinedTable)
-#except psycopg2.errors.CheckViolation:
-#    print(Fore.RED+"Нарушение ограничений целостности" + Style.RESET_ALL)
-#    m.main_cycle()
-#except Exception as e:
-#    print(Fore.RED+"Что-то пошло не так"+Style.RESET_ALL)
-#    cur = m.connection.conn.cursor()
-#    cur.execute("ROLLBACK TRANSACTION;")
-#    try:
-#        connection.logger.warn(e)
-#    except Exception as e:
-#        print(Fore.RED+"лог файл недоступен"+Style.RESET_ALL)
-#    m.main_cycle()
+#m.main_cycle()
+try:
+    m.main_cycle()
+except psycopg2.errors.UndefinedTable as UndefinedTable:
+    print(Fore.RED +"Кажется заданная таблица не найдена, проверьте структуру базы данных или выполните действие 2 из главного меню, чтобы создать Таблицы\n" + Style.RESET_ALL
+        , UndefinedTable)
+except psycopg2.errors.CheckViolation:
+    print(Fore.RED+"Нарушение ограничений целостности" + Style.RESET_ALL)
+    m.main_cycle()
+except Exception as e:
+    print(Fore.RED+"Что-то пошло не так"+Style.RESET_ALL)
+    cur = m.connection.conn.cursor()
+    cur.execute("ROLLBACK TRANSACTION;")
+    try:
+        connection.logger.warn(e)
+    except Exception as e:
+        print(Fore.RED+"лог файл недоступен"+Style.RESET_ALL)
+    m.main_cycle()

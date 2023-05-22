@@ -84,6 +84,8 @@ class ShelfTable(DbTable):
     def __call_creation_wizard(self)->list:
         rid = None
         max_spaces = None
+        l=w=h = 1
+        max_weight = 0
         rt = RoomTable()
         """
         Мастер создания полок
@@ -118,10 +120,11 @@ class ShelfTable(DbTable):
 
             try:
                 l,w,h = map(float, input(Fore.YELLOW+"Введите габариты места на полке, разделяя их пробелом: "+Style.RESET_ALL).split())
-                if((pglimits.NUMERIC7_0_MIN<=l<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<=h<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<= w<=pglimits.NUMERIC7_0_MAX)):
+                if not((pglimits.NUMERIC7_0_MIN<=l<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<=h<=pglimits.NUMERIC7_0_MAX) or (pglimits.NUMERIC7_0_MIN<= w<=pglimits.NUMERIC7_0_MAX)):
                     raise ValueError
             except ValueError as e:
                 print(Fore.RED+"ты в курсе что такое три числа?"+Style.RESET_ALL)
+                print(e)
                 self.dbconn.logger.warn(Fore.GREEN+str(e)+Style.RESET_ALL)
             if(l <= 0 or w <= 0 or h <= 0):
                 print(Fore.RED+"Недопустимый габарит")
