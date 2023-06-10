@@ -15,25 +15,35 @@ class DbTable:
         return {"test": ["integer", "PRIMARY KEY"]}
 
     def column_names(self):
-        return sorted(self.columns().keys(), key=lambda x: x)
+        return (self.columns().keys())
 
     def primary_key(self):
         return ['id']
-
-    def column_names_without_id(self):
-        res = sorted(self.columns().keys(), key=lambda x: x)
-        if 'id' in res:
-            res.remove('id')
+# переписал криво написанные методы
+    def column_names_without_id(self)->list:
+        """
+        возвращает список колонок не включая ключ
+        """
+        res = list(self.columns().keys())
+        for col in self.primary_key():
+            res.remove(col)
         return res
+
 
     def table_constraints(self):
         return []
+    # Переписал мето Create убрав сортировку столбцов по алфавиту, из-за нее проблема при вставке новых машин
 
-    def create(self):
+    def create(self)->None:
+        """
+        Создать таблицу в БД
+        """
         sql = "CREATE TABLE " + self.table_name() + "("
-        arr = [k + " " + " ".join(v) for k, v in sorted(self.columns().items(), key=lambda x: x[0])]
+        arr = [k + " " + " ".join(v) for k, v in self.columns().items()]
+        #print(arr)
         sql += ", ".join(arr + self.table_constraints())
         sql += ")"
+        #print(sql)
         cur = self.dbconn.conn.cursor()
         cur.execute(sql)
         self.dbconn.conn.commit()
@@ -45,18 +55,19 @@ class DbTable:
         cur.execute(sql)
         self.dbconn.conn.commit()
         return
+    # Переписал метод Insert_one т к он допускал наличие SQLi
 
-    def insert_one(self, vals):
-        for i in range(0, len(vals)):
-            if type(vals[i]) == str:
-                vals[i] = "'" + vals[i] + "'"
-            else:
-                vals[i] = str(vals[i])
-        sql = "INSERT INTO " + self.table_name()
-        sql += " VALUES("
-        sql += ", ".join(vals) + ")"
+    def insert_one(self, vals:list)->None:
+        """
+        Добавить запись в таблицу
+        """
+        sql = "INSERT INTO " + self.table_name() + "("
+        sql += ",".join(self.column_names_without_id()) + ") VALUES("
+        sql +=  "(%s)," * (len(vals)-1) + "(%s)" + ")"
+        #print(sql)
         cur = self.dbconn.conn.cursor()
-        cur.execute(sql)
+        #print(sql)
+        cur.execute(sql, vals)
         self.dbconn.conn.commit()
         return
 
@@ -84,14 +95,6 @@ class DbTable:
         cur.execute(sql)
         return cur.fetchall()
 
-    def delete_by_id_drivers(self, id):
-        sql = "DELETE FROM " + self.table_name() + " WHERE id_driver = %s"
-        cur = self.dbconn.conn.cursor()
-        cur.execute(sql, (id,))
-        self.dbconn.conn.commit()
 
-        def delete_by_car_id(self, rack_id):
-            sql = "DELETE FROM " + self.table_name() + " WHERE id_car = %s"
-            cur = self.dbconn.conn.cursor()
-            cur.execute(sql, str(rack_id))
-            self.dbconn.conn.commit()
+
+
