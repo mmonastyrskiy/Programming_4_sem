@@ -1,4 +1,5 @@
 from lib.dbtable import *
+from driver_table import DriveTable
 
 
 class CarTable(DbTable):
@@ -14,7 +15,6 @@ class CarTable(DbTable):
                 "gos_number": ["varchar(12)", "NOT NULL"],
                 "year": ["numeric", "NOT NULL"],
                 "drivers_id": ["integer", f'REFERENCES {self.dbconn.prefix}drivers ON DELETE CASCADE'] # добавил референс к таблице 1 
-                "drivers_id": ["integer", f'REFERENCES {self.dbconn.prefix}drivers ON DELETE CASCADE']
                 }
 
     def primary_key(self):
@@ -70,3 +70,16 @@ def all_by_car_id(self, id_driver):
         cur = self.dbconn.conn.cursor()
         cur.execute(sql, (id,))
         self.dbconn.conn.commit()
+    def find_car_by_driver(self,driver_id: int): # Поиск машин по id водителя
+        dt = DriveTable()
+        if driver_id not in dt.create_list_of_ids():
+            print("Водителя не существует")
+            return
+        sql = "SELECT * FROM " + self.table_name()
+        sql += " WHERE drivers_id = (%s)"
+        sql += " ORDER BY "
+        sql += ", ".join(self.primary_key())
+        cur = self.dbconn.conn.cursor()
+        cur.execute(sql, (str(driver_id),))
+        return cur.fetchall()    
+

@@ -97,4 +97,15 @@ class DbTable:
 
 
 
+    def create_list_of_ids(self)-> list:
+        """
+        список айдишников в таблице
+        """
+        sql = f"SELECT {self.primary_key()[0]} FROM " + self.table_name()
+        cur = self.dbconn.conn.cursor()
+        cur.execute(sql)
+        ids = [x[0] for x in cur.fetchall()]
+        #print(ids)
+        return ids
+
 
