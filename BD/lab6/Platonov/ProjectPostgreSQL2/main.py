@@ -47,6 +47,7 @@ class Main:
 Основное меню (выберите цифру в соответствии с необходимым действием): 
     1 - просмотр водителей;
     2 - сброс и инициализация таблиц;
+    3 - просмотр авто
     9 - выход."""
         print(menu)
         return
@@ -254,13 +255,17 @@ class Main:
 
         print("Выбран водитель:")
         for driver in self.driver_list:
-            print(str(driver[0]) + " " + str(driver[1]) + " " + str(driver[2]) + " " + str(driver[3]) + " " + driver[
-                4] + " " + driver[5] + " " + driver[6] + " " + driver[7])
+            print(str(driver[0]) + " " + str(driver[1]) + " " + str(driver[2]) + " " + str(driver[3]) + " " + str(driver[
+                4]) + " " + str(driver[5]) + " " + str(driver[6]) + " " + str(driver[7]))
+
+        print(CarTable().find_car_by_driver(
+            DriveTable().find_by_position(int(num))[0]
+            ))
         menu = """Дальнейшие операции:
     0 - возврат в главное меню;
     1 - возврат в просмотр людей;
-    6 - добавление нового телефона;
-    7 - удаление телефона;
+    6 - добавление такси телефона;
+    7 - удаление такси;
     9 - выход."""
         print(menu)
         return self.read_next_step()

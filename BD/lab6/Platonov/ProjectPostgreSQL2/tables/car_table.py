@@ -38,13 +38,13 @@ class CarTable(DbTable):
         self.dbconn.conn.commit()
 
 
-def all_by_car_id(self, id_driver):
-    sql = "SELECT * FROM " + self.table_name()
-    sql += " WHERE drivers_id =%(id)s"
-    sql += " ORDER BY " + ", ".join(self.primary_key())
-    cur = self.dbconn.conn.cursor()
-    cur.execute(sql, {"id": str(id_driver)})
-    return cur.fetchall()
+    def all_by_car_id(self, id_driver):
+        sql = "SELECT * FROM " + self.table_name()
+        sql += " WHERE drivers_id =%(id)s"
+        sql += " ORDER BY " + ", ".join(self.primary_key())
+        cur = self.dbconn.conn.cursor()
+        cur.execute(sql, {"id": str(id_driver)})
+        return cur.fetchall()
 
 
     def create(self):
@@ -70,7 +70,8 @@ def all_by_car_id(self, id_driver):
         cur = self.dbconn.conn.cursor()
         cur.execute(sql, (id,))
         self.dbconn.conn.commit()
-    def find_car_by_driver(self,driver_id: int): # Поиск машин по id водителя
+
+    def find_car_by_driver(self,driver_id: int): # Поиск машин по id водителяд
         dt = DriveTable()
         if driver_id not in dt.create_list_of_ids():
             print("Водителя не существует")

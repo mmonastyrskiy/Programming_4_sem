@@ -42,12 +42,10 @@ class DriveTable(DbTable):
 
     def add_driver(self, last_name, first_name, second_name, birthday, inn, passport_series, passport_num):
         # Create the sequence if it doesn't exist
-        cur = self.dbconn.conn.cursor()
-        cur.execute(self.sequence())
 
         sql = "INSERT INTO " + self.table_name() + " "
         sql += "(" + ", ".join(self.columns().keys()) + ") "
-        sql += "VALUES (nextval('drivers_id_seq'), %(last_name)s, %(first_name)s, %(second_name)s, %(birthday)s, %(inn)s, %(passport_series)s, %(passport_num)s)"
+        sql += "VALUES (%(last_name)s, %(first_name)s, %(second_name)s, %(birthday)s, %(inn)s, %(passport_series)s, %(passport_num)s)"
         cur.execute(sql, {
             "last_name": last_name,
             "first_name": first_name,
