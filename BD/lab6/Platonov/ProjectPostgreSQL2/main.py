@@ -1,11 +1,11 @@
 import sys
 
 sys.path.append('tables')
-
-from lib.project_config import *
-from lib.dbconnection import *
-from tables.car_table import *
-from tables.driver_table import *
+sys.path.append('lib')
+from project_config import *
+from dbconnection import *
+from car_table import *
+from driver_table import *
 
 
 class Main:

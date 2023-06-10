@@ -10,10 +10,14 @@ class DbConnection:
         self.password = config.password
         self.host = config.host
         self.prefix = config.dbtableprefix
+        self.port = config.port
         self.conn = psycopg2.connect(dbname = self.dbname,
                                     user = self.user, 
                                     password = self.password,
-                                    host = self.host)
+                                    host = self.host,
+                                    port = self.port)
+        # Добавил распознавание порта из конфига, т к у меня запущены 2 постгресса, можно потом убрать
+
 
     def __del__(self):
         if self.conn:
