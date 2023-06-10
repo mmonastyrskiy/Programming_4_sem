@@ -13,11 +13,8 @@ class CarTable(DbTable):
                 "color": ["varchar(32)", "NOT NULL"],
                 "gos_number": ["varchar(12)", "NOT NULL"],
                 "year": ["numeric", "NOT NULL"],
-<<<<<<< HEAD
                 "drivers_id": ["integer", f'REFERENCES {self.dbconn.prefix}drivers ON DELETE CASCADE'] # добавил референс к таблице 1 
-=======
                 "drivers_id": ["integer", f'REFERENCES {self.dbconn.prefix}drivers ON DELETE CASCADE']
->>>>>>> 8ab45e66a07dd887c059d3153c1055193334f820
                 }
 
     def primary_key(self):
