@@ -7,7 +7,7 @@ class DriveTable(DbTable):
 
     def columns(self):
         return {
-            "id_driver": ["integer", "NOT NULL", "PRIMARY KEY"],
+            "id_driver": ["serial", "PRIMARY KEY"],
             "last_name": ["varchar(32)", "NOT NULL"],
             "first_name": ["varchar(32)", "NOT NULL"],
             "second_name": ["varchar(32)"],
@@ -16,7 +16,7 @@ class DriveTable(DbTable):
             "passport_series": ["varchar(12)", "NOT NULL"],
             "passport_num": ["varchar(12)", "NOT NULL"]
         }
-
+# Переписал тип данных id на serial, теперь можно выкинуть sequence 
 
     def primary_key(self):
         return ['id_driver']
@@ -39,9 +39,6 @@ class DriveTable(DbTable):
         cur.execute(sql, {"off": name})
         self.dbconn.conn.commit()
 
-    def sequence(self):
-        sql = "CREATE SEQUENCE IF NOT EXISTS drivers_id_seq"
-        return sql
 
     def add_driver(self, last_name, first_name, second_name, birthday, inn, passport_series, passport_num):
         # Create the sequence if it doesn't exist
@@ -62,12 +59,10 @@ class DriveTable(DbTable):
         })
         self.dbconn.conn.commit()
 
-    def create(self):
-        sql = "CREATE TABLE " + self.table_name() + "("
-        arr = [k + " " + " ".join(v) for k, v in self.columns().items()]
-        sql += ", ".join(arr + self.table_constraints())
-        sql += ")"
+
+    def delete_by_car_id(self, rack_id):
+        sql = "DELETE FROM " + self.table_name() + " WHERE id_car = %s"
         cur = self.dbconn.conn.cursor()
-        cur.execute(sql)
+        cur.execute(sql, str(rack_id))
         self.dbconn.conn.commit()
-        return
+    # Разнес лишие методы из DbTable по файлам, убрал лишние переопределения 

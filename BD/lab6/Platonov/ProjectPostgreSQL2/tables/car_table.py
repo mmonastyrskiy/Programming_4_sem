@@ -6,13 +6,14 @@ class CarTable(DbTable):
         return self.dbconn.prefix + "cars"
 
     def columns(self):
-        return {"id_car": ["integer", "NOT NULL", "PRIMARY KEY"],
+        return {"id_car": ["serial", "PRIMARY KEY"],
+        # Переписал тип данных id на serial, теперь можно выкинуть sequence 
                 "mark": ["varchar(32)", "NOT NULL"],
                 "class2": ["varchar(32)", "NOT NULL"],
                 "color": ["varchar(32)", "NOT NULL"],
                 "gos_number": ["varchar(12)", "NOT NULL"],
                 "year": ["numeric", "NOT NULL"],
-                "drivers_id": ["integer"]
+                "drivers_id": ["integer", f'REFERENCES {self.dbconn.prefix}drivers ON DELETE CASCADE'] # добавил референс к таблице 1 
                 }
 
     def primary_key(self):
@@ -44,9 +45,6 @@ def all_by_car_id(self, id_driver):
     cur.execute(sql, {"id": str(id_driver)})
     return cur.fetchall()
 
-    def sequence_r(self):
-        sql = "CREATE SEQUENCE driver_id_seq"
-        return sql
 
     def create(self):
         sql = "CREATE TABLE " + self.table_name() + "("
@@ -59,9 +57,15 @@ def all_by_car_id(self, id_driver):
         return
 
 
-        def exists(self, car_id):
-            sql = "SELECT * FROM " + self.table_name()
-            sql += " WHERE id_car =%(id)s"
-            cur = self.dbconn.conn.cursor()
-            cur.execute(sql, {"id": str(car_id)})
-            return cur.fetchone()
+    def exists(self, car_id):
+        sql = "SELECT * FROM " + self.table_name()
+        sql += " WHERE id_car =%(id)s"
+        cur = self.dbconn.conn.cursor()
+        cur.execute(sql, {"id": str(car_id)})
+        return cur.fetchone()
+
+    def delete_by_id_drivers(self, id):
+        sql = "DELETE FROM " + self.table_name() + " WHERE id_driver = %s"
+        cur = self.dbconn.conn.cursor()
+        cur.execute(sql, (id,))
+        self.dbconn.conn.commit()
